@@ -1,47 +1,47 @@
 import React, { useState } from 'react';
+import { Line } from 'react-chartjs-2';
 
 function App() {
   const [currentTotal, setCurrentTotal] = useState('');
   const [yearsToRetire, setYearsToRetire] = useState('');
   const [desiredAmount, setDesiredAmount] = useState('');
-  const [result, setResult] = useState(null);
+  const [chartData, setChartData] = useState(null);
 
   const calculateRetirement = () => {
-    const total = parseFloat(currentTotal);
-    const years = parseFloat(yearsToRetire);
-    const goal = parseFloat(desiredAmount);
+    // ... (same as before)
 
     if (!isNaN(total) && !isNaN(years) && !isNaN(goal) && years > 0) {
       const monthlyContribution = (goal - total) / (years * 12);
-      setResult(`To reach your goal, contribute approximately $${monthlyContribution.toFixed(2)} per month.`);
+      const contributions = Array.from({ length: years }, (_, index) => {
+        return parseFloat((monthlyContribution * 12 * (index + 1)).toFixed(2));
+      });
+
+      setChartData({
+        labels: Array.from({ length: years }, (_, index) => `Year ${index + 1}`),
+        datasets: [
+          {
+            label: 'Yearly Contribution',
+            data: contributions,
+            fill: false,
+            borderColor: 'rgba(75,192,192,1)',
+          },
+        ],
+      });
     } else {
-      setResult('Please enter valid numbers for all fields.');
+      setChartData(null);
     }
   };
 
   return (
     <div>
-      <h1>Retirement Planner</h1>
-      <div>
-        <label>
-          Current Retirement Total:
-          <input type="number" value={currentTotal} onChange={(e) => setCurrentTotal(e.target.value)} />
-        </label>
-      </div>
-      <div>
-        <label>
-          Years Till Retirement:
-          <input type="number" value={yearsToRetire} onChange={(e) => setYearsToRetire(e.target.value)} />
-        </label>
-      </div>
-      <div>
-        <label>
-          Desired Retirement Amount:
-          <input type="number" value={desiredAmount} onChange={(e) => setDesiredAmount(e.target.value)} />
-        </label>
-      </div>
+      {/* ... (same as before) */}
       <button onClick={calculateRetirement}>Calculate</button>
-      {result && <p>{result}</p>}
+      {chartData && (
+        <div>
+          <h2>Yearly Contributions Chart</h2>
+          <Line data={chartData} />
+        </div>
+      )}
     </div>
   );
 }
