@@ -50,7 +50,7 @@ const RetirementPlanner = () => {
   return (
     <div>
       
-      <h1>Retirement Planner</h1>
+      <h1>Savings Planner</h1>
 
       <div className='inputs'>
       <div>
@@ -75,7 +75,7 @@ const RetirementPlanner = () => {
           <div class="results">
           {results.map((result) => (
               <div class="card" key={result.year}>
-                <div>{result.year}</div>
+                <div class="year">{result.year}</div>
                 <div>${result.yearlyReturn}</div>
                 <div>${result.total}</div>
               </div>
