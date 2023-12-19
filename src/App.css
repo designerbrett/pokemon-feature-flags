@@ -1,6 +1,13 @@
+@font-face {
+  font-family: 'VarelaRoundRegular';
+  src: url('font/VarelaRound-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   margin: 0;
-  font-family: "Arial", sans-serif;
+  font-family: "Helvetica", "Arial", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 20px;
@@ -41,6 +48,7 @@ input {
 .results .card {
   width: 100%;
   padding: 8px;
+  font-family: 'VarelaRoundRegular', sans-serif;
 }
 .results .card div {
   display: inline-block;
