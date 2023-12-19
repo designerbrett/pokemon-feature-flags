@@ -63,20 +63,21 @@ const RetirementPlanner = () => {
         <input type="text" value={`$${currentAssets}`} onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))} />
       </div>
       <div>
-        <label>Years to save:</label>
-        <input type="text" value={yearsTillRetirement} onChange={(e) => setYearsTillRetirement(e.target.value)} />
-      </div>
-      <div>
-        <label>Estimated Return (%):</label>
-        <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
-      </div>
-      <div>
         <label>Compounding Frequency:</label>
         <select value={compoundingFrequency} onChange={(e) => setCompoundingFrequency(e.target.value)}>
           <option value="yearly">Yearly</option>
           <option value="monthly">Monthly</option>
         </select>
       </div>
+      <div>
+        <label>Time to save (In Years or Months)</label>
+        <input type="text" value={yearsTillRetirement} onChange={(e) => setYearsTillRetirement(e.target.value)} />
+      </div>
+      <div>
+        <label>Estimated Return (%):</label>
+        <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
+      </div>
+      
       <div>
         <button onClick={handleReset}>Reset</button>
       </div>
@@ -86,7 +87,7 @@ const RetirementPlanner = () => {
         <h2 className='results-heading'>Results</h2>
         <div className='results-header'>
           <div class="year">Period</div>
-          <div>Compounding Amount</div>
+          <div>Return</div>
           <div>End Total</div>
         </div>
           <div class="results">
