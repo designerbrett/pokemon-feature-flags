@@ -63,14 +63,6 @@ const RetirementPlanner = () => {
 
       <div>
         <h2>Results</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Total</th>
-              <th>Yearly Return</th>
-            </tr>
-          </thead>
           <div class="results">
           {results.map((result) => (
               <div class="card" key={result.year}>
@@ -80,18 +72,6 @@ const RetirementPlanner = () => {
               </div>
             ))}
           </div>
-
-
-          <tbody>
-            {results.map((result) => (
-              <tr key={result.year}>
-                <td>{result.year}</td>
-                <td>${result.total}</td>
-                <td>${result.yearlyReturn}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   );
