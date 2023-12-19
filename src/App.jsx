@@ -8,6 +8,54 @@ const parseFormattedNumber = (formattedNumber) => {
   return parseFloat(formattedNumber.replace(/,/g, '')) || 0;
 };
 
+// Add this ref in your render function
+const chartRef = useRef(null);
+
+const updateChart = () => {
+  const ctx = chartRef.current.getContext('2d');
+
+  const labels = results.map(result => result.period);
+  const data = results.map(result => parseFormattedNumber(result.total));
+
+  if (window.myBarChart) {
+    window.myBarChart.destroy();
+  }
+
+  window.myBarChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Total',
+        data: data,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      }],
+    },
+    options: {
+      scales: {
+        x: {
+          type: 'linear',
+          position: 'bottom',
+          title: {
+            display: true,
+            text: 'Year',
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Total',
+          },
+        },
+      },
+    },
+  });
+};
+
+
 const RetirementPlanner = () => {
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
@@ -38,10 +86,10 @@ const RetirementPlanner = () => {
     localStorage.setItem('estimatedReturn', estimatedReturn);
     localStorage.setItem('contributionAmount', contributionAmount);
     localStorage.setItem('compoundingFrequency', compoundingFrequency);
-
-
+  
     calculateRetirementPlan();
-  }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency]);
+    updateChart(); // Call the updateChart function
+  }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency, results]);
 
   const calculateRetirementPlan = () => {
   let currentTotal = parseFormattedNumber(currentAssets);
@@ -195,6 +243,8 @@ const RetirementPlanner = () => {
           <p><strong>Total Contributions:</strong> ${getTotal('contributionAmount')}</p>
           <p><strong>Return:</strong> {(((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
         </div>
+
+        <canvas ref={chartRef}></canvas>
 
       </div>
     </div>
