@@ -1,48 +1,60 @@
 import React, { useState } from 'react';
 
-function App() {
-  const [currentTotal, setCurrentTotal] = useState('');
-  const [yearsToRetire, setYearsToRetire] = useState('');
-  const [desiredAmount, setDesiredAmount] = useState('');
-  const [chartData, setChartData] = useState(null);
+const RetirementPlanner = () => {
+  const [currentAssets, setCurrentAssets] = useState('');
+  const [yearsTillRetirement, setYearsTillRetirement] = useState('');
+  const [endRetirementTotal, setEndRetirementTotal] = useState('');
+  const [results, setResults] = useState([]);
 
-  const calculateRetirement = () => {
-    // ... (same as before)
+  const calculateRetirementPlan = () => {
+    const yearlyContribution = (endRetirementTotal - currentAssets) / yearsTillRetirement;
+    let currentTotal = parseFloat(currentAssets);
 
-    if (!isNaN(total) && !isNaN(years) && !isNaN(goal) && years > 0) {
-      const monthlyContribution = (goal - total) / (years * 12);
-      const contributions = Array.from({ length: years }, (_, index) => {
-        return parseFloat((monthlyContribution * 12 * (index + 1)).toFixed(2));
-      });
+    const newResults = Array.from({ length: parseInt(yearsTillRetirement) }, (_, index) => {
+      currentTotal += yearlyContribution;
+      return { year: index + 1, total: currentTotal.toFixed(2) };
+    });
 
-      setChartData({
-        labels: Array.from({ length: years }, (_, index) => `Year ${index + 1}`),
-        datasets: [
-          {
-            label: 'Yearly Contribution',
-            data: contributions,
-            fill: false,
-            borderColor: 'rgba(75,192,192,1)',
-          },
-        ],
-      });
-    } else {
-      setChartData(null);
-    }
+    setResults(newResults);
   };
 
   return (
     <div>
-      {/* ... (same as before) */}
-      <button onClick={calculateRetirement}>Calculate</button>
-      {chartData && (
-        <div>
-          <h2>Yearly Contributions Chart</h2>
-          <Line data={chartData} />
-        </div>
-      )}
+      <h1>Retirement Planner</h1>
+      <div>
+        <label>Current Retirement Assets:</label>
+        <input type="number" value={currentAssets} onChange={(e) => setCurrentAssets(e.target.value)} />
+      </div>
+      <div>
+        <label>Years Till Retirement:</label>
+        <input type="number" value={yearsTillRetirement} onChange={(e) => setYearsTillRetirement(e.target.value)} />
+      </div>
+      <div>
+        <label>End Retirement Total:</label>
+        <input type="number" value={endRetirementTotal} onChange={(e) => setEndRetirementTotal(e.target.value)} />
+      </div>
+      <button onClick={calculateRetirementPlan}>Calculate</button>
+      <div>
+        <h2>Results</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((result) => (
+              <tr key={result.year}>
+                <td>{result.year}</td>
+                <td>${result.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default RetirementPlanner;
