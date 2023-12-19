@@ -39,7 +39,8 @@ h2 {
   margin: 16px 0;
   box-shadow: 0 0.125rem 0.25rem 0 #353a3e14;
 }
-.inputs label {
+.inputs label,
+.display-values strong {
   font-size: 0.8rem;
   color: #777;
   font-weight: bold;
