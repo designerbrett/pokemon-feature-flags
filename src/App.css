@@ -54,6 +54,8 @@ input {
   position: sticky;
   top: 0;
   z-index: 1;
+  background-color: #FFF;
+  padding: 8px 0;
 }
 .results-header div {
   display: inline-block;
