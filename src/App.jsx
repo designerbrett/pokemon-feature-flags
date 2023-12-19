@@ -15,16 +15,16 @@ const RetirementPlanner = () => {
   }, [currentAssets, yearsTillRetirement, endRetirementTotal, estimatedReturn]);
 
   const calculateRetirementPlan = () => {
-    const yearlyContribution = (endRetirementTotal - currentAssets) / yearsTillRetirement;
     let currentTotal = parseFloat(currentAssets);
     const returnRate = parseFloat(estimatedReturn) / 100;
 
     const newResults = Array.from({ length: parseInt(yearsTillRetirement) }, (_, index) => {
+      const remainingYears = yearsTillRetirement - index;
       const yearlyReturn = currentTotal * returnRate;
 
       // Calculate the adjusted contribution as a percentage of the remaining amount needed
       const remainingAmount = endRetirementTotal - currentTotal;
-      const adjustedContributionPercentage = remainingAmount > 0 ? yearlyContribution / remainingAmount : 0;
+      const adjustedContributionPercentage = remainingAmount > 0 ? yearlyReturn / remainingAmount : 0;
       const adjustedContribution = adjustedContributionPercentage * remainingAmount;
 
       currentTotal = currentTotal + adjustedContribution + yearlyReturn;
