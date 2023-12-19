@@ -57,9 +57,11 @@ input {
   vertical-align: baseline;
   width: 38%;
   margin-right: 1%;
+  text-align: right;
 }
 .results-header div.year {
   width: 19%;
+  text-align: left;
 }
 
 .results {
@@ -78,12 +80,15 @@ input {
   vertical-align: baseline;
   width: 38%;
   margin-right: 1%;
+  text-align: right;
 }
 .results .card div.year {
   width: 19%;
+  text-align: left;
 }
 .results .dollar-sign {
   font-size: 1rem;
+  color: #555;
 }
 
 
