@@ -69,9 +69,9 @@ h2 {
   z-index: 1;
   background-color: #FFF;
   padding: 8px 0;
+  display: flex;
 }
 .results-header div {
-  display: flex;
   text-align: right;
 }
 .results-header div.year {
@@ -88,9 +88,9 @@ h2 {
   width: 100%;
   padding: 8px;
   font-family: 'VarelaRoundRegular', sans-serif;
+  display: flex;
 }
 .results .card div {
-  display: flex;
   text-align: right;
 }
 .results .card div.year {
