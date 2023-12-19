@@ -85,6 +85,11 @@ const RetirementPlanner = () => {
     return results.reduce((total, result) => total + parseFloat(result[property].replace(/,/g, '')), 0).toFixed(2);
   };
 
+  // Calculate final balance and compound interest accrued separately
+  const finalBalance = getTotal('total');
+  const compoundInterestAccrued = finalBalance - getTotal('startingAmount');
+
+
   return (
     <div>
       <h1>Savings Planner</h1>
@@ -183,10 +188,10 @@ const RetirementPlanner = () => {
 
         <div className='totals-section'>
           <h2>Totals</h2>
-          <p><strong>Final Balance:</strong> ${getTotal('total')}</p>
-          <p><strong>Compound Interest Accrued:</strong> ${getTotal('compoundingAmount')}</p>
+          <p><strong>Final Balance:</strong> ${finalBalance}</p>
+          <p><strong>Compound Interest Accrued:</strong> ${compoundInterestAccrued}</p>
           <p><strong>Total Contributions:</strong> ${getTotal('contributionAmount')}</p>
-          <p><strong>Percentage Return:</strong> {(((getTotal('total') - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
+          <p><strong>Percentage Return:</strong> {(((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
         </div>
 
       </div>
