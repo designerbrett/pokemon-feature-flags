@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const RetirementPlanner = () => {
-  const [currentAssets, setCurrentAssets] = useState('');
-  const [yearsTillRetirement, setYearsTillRetirement] = useState('');
-  const [endRetirementTotal, setEndRetirementTotal] = useState('');
-  const [estimatedReturn, setEstimatedReturn] = useState('');
+  const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
+  const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
+  const [endRetirementTotal, setEndRetirementTotal] = useState(localStorage.getItem('endRetirementTotal') || '');
+  const [estimatedReturn, setEstimatedReturn] = useState(localStorage.getItem('estimatedReturn') || '');
   const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem('currentAssets', currentAssets);
+    localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
+    localStorage.setItem('endRetirementTotal', endRetirementTotal);
+    localStorage.setItem('estimatedReturn', estimatedReturn);
+  }, [currentAssets, yearsTillRetirement, endRetirementTotal, estimatedReturn]);
 
   const calculateRetirementPlan = () => {
     const yearlyContribution = (endRetirementTotal - currentAssets) / yearsTillRetirement;
