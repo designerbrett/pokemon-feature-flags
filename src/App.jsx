@@ -12,7 +12,11 @@ const RetirementPlanner = () => {
 
     const newResults = Array.from({ length: parseInt(yearsTillRetirement) }, (_, index) => {
       currentTotal += yearlyContribution;
-      return { year: index + 1, total: currentTotal.toFixed(2) };
+      return {
+        year: index + 1,
+        total: currentTotal.toFixed(2),
+        contribution: yearlyContribution.toFixed(2),
+      };
     });
 
     setResults(newResults);
@@ -41,6 +45,7 @@ const RetirementPlanner = () => {
             <tr>
               <th>Year</th>
               <th>Total</th>
+              <th>Contribution</th>
             </tr>
           </thead>
           <tbody>
@@ -48,6 +53,7 @@ const RetirementPlanner = () => {
               <tr key={result.year}>
                 <td>{result.year}</td>
                 <td>${result.total}</td>
+                <td>${result.contribution}</td>
               </tr>
             ))}
           </tbody>
