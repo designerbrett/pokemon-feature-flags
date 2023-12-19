@@ -82,5 +82,8 @@ input {
 .results .card div.year {
   width: 19%;
 }
+.results .dollar-sign {
+  font-size: 1rem;
+}
 
 
