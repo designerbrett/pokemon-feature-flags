@@ -35,8 +35,12 @@ input {
 .results {
   max-width: 100%;
 }
+.results .card:nth-child(even) {
+  background: #f1f1f1;
+}
 .results .card {
   width: 100%;
+  padding: 8px;
 }
 .results .card div {
   display: inline-block;
