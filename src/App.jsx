@@ -93,7 +93,7 @@ const RetirementPlanner = () => {
           <div class="results">
           {results.map((result) => (
               <div class="card" key={result.period}>
-                <div class="period">{result.period}</div>
+                <div class="year">{result.period}</div>
                 <div><span className='dollar-sign'>$</span>{result.compoundingAmount}</div>
                 <div><span className='dollar-sign'>$</span>{result.total}</div>
               </div>
