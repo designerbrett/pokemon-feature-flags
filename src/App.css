@@ -24,6 +24,7 @@ input {
   border-radius: 8px;
   border: 1px solid #e6e6e6;
   margin: 16px 0;
+  box-shadow: 1px 0.625rem 0 #353a3e0f,0 0.125rem 0.25rem 0 #353a3e14;
 }
 .inputs label {
   font-size: 0.8rem;
