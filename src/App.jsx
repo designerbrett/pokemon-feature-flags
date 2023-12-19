@@ -35,12 +35,10 @@ const RetirementPlanner = () => {
 
       currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
 
-
       return {
-        year: index + 1,
+        period: index + 1,
         total: formatNumberWithCommas(currentTotal.toFixed(2)),
-        yearlyReturn: formatNumberWithCommas(yearlyReturn.toFixed(2)),
-        compoundingFrequency: compoundingFrequency,
+        compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
       };
     });
 
@@ -87,15 +85,15 @@ const RetirementPlanner = () => {
       <div>
         <h2 className='results-heading'>Results</h2>
         <div className='results-header'>
-          <div class="year">Year</div>
-          <div>Return</div>
+          <div class="year">Period</div>
+          <div>Compounding Amount</div>
           <div>End Total</div>
         </div>
           <div class="results">
           {results.map((result) => (
               <div class="card" key={result.period}>
-                <div class="year">{result.period}</div>
-                <div><span className='dollar-sign'>$</span>{result.compoundingFrequency}</div>
+                <div class="period">{result.period}</div>
+                <div><span className='dollar-sign'>$</span>{result.compoundingAmount}</div>
                 <div><span className='dollar-sign'>$</span>{result.total}</div>
               </div>
             ))}
