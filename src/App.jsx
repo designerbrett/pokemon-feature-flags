@@ -44,7 +44,6 @@ const RetirementPlanner = () => {
   const handleReset = () => {
     setCurrentAssets('');
     setYearsTillRetirement('');
-    setEndRetirementTotal('');
     setEstimatedReturn('');
   };
 
