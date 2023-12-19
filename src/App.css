@@ -11,7 +11,9 @@ input {
   width: 100%;
 }
 .inputs input {
-  font-size: 3rem;
+  font-size: 2.5rem;
+  padding-left: 0;
+  border-bottom: 1px solid #CCC;
 }
 
 
