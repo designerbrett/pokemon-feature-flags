@@ -67,19 +67,43 @@ const RetirementPlanner = () => {
       <div className='inputs'>
         <div>
           <label>Current Assets:</label>
-          <input type="text" value={`$${currentAssets}`} onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))} />
+          <input
+            type="text"
+            inputMode="numeric" // Set inputMode to "numeric"
+            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
+            value={`$${currentAssets}`}
+            onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))}
+          />
         </div>
         <div>
           <label>Years to save:</label>
-          <input type="text" value={yearsTillRetirement} onChange={(e) => setYearsTillRetirement(e.target.value)} />
+          <input
+            type="text"
+            inputMode="numeric" // Set inputMode to "numeric"
+            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
+            value={yearsTillRetirement}
+            onChange={(e) => setYearsTillRetirement(e.target.value)}
+          />
         </div>
         <div>
           <label>Estimated Return (%):</label>
-          <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
+          <input
+            type="text"
+            inputMode="numeric" // Set inputMode to "numeric"
+            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
+            value={estimatedReturn}
+            onChange={(e) => setEstimatedReturn(e.target.value)}
+          />
         </div>
         <div>
           <label>Contribution Amount:</label>
-          <input type="text" value={`$${contributionAmount}`} onChange={(e) => setContributionAmount(e.target.value.replace('$', ''))} />
+          <input
+            type="text"
+            inputMode="numeric" // Set inputMode to "numeric"
+            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
+            value={`$${contributionAmount}`}
+            onChange={(e) => setContributionAmount(e.target.value.replace('$', ''))}
+          />
         </div>
         <div>
           <label>Compounding Frequency:</label>
