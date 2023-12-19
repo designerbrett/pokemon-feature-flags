@@ -8,8 +8,6 @@ const parseFormattedNumber = (formattedNumber) => {
   return parseFloat(formattedNumber.replace(/,/g, '')) || 0;
 };
 
-import { Bar } from 'react-chartjs-2';
-
 const Chart = ({ results }) => {
   const data = {
     labels: results.map(result => result.period),
