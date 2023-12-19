@@ -16,8 +16,23 @@ const RetirementPlanner = () => {
   const [compoundingFrequency, setCompoundingFrequency] = useState('yearly');
   const [results, setResults] = useState([]);
   const [showInputs, setShowInputs] = useState(true);
+  const [enteredValues, setEnteredValues] = useState({
+    currentAssets: '',
+    yearsTillRetirement: '',
+    estimatedReturn: '',
+    contributionAmount: '',
+    compoundingFrequency: 'yearly',
+  });
 
   useEffect(() => {
+    setEnteredValues({
+      currentAssets,
+      yearsTillRetirement,
+      estimatedReturn,
+      contributionAmount,
+      compoundingFrequency,
+    });
+
     localStorage.setItem('currentAssets', currentAssets);
     localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
     localStorage.setItem('estimatedReturn', estimatedReturn);
@@ -73,7 +88,7 @@ const RetirementPlanner = () => {
         <button onClick={toggleInputs}>{showInputs ? 'Hide Inputs' : 'Show Inputs'}</button>
       </div>
 
-      {showInputs && (
+      {(showInputs || !enteredValues) && (
         <div className='inputs'>
           <div>
             <label>Current Assets:</label>
