@@ -71,7 +71,7 @@ const RetirementPlanner = () => {
               <th>Yearly Return</th>
             </tr>
           </thead>
-          <div>
+          <div class="results">
           {results.map((result) => (
               <div class="card" key={result.year}>
                 <div>{result.year}</div>
