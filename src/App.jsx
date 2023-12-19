@@ -4,6 +4,10 @@ const formatNumberWithCommas = (number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
+const parseFormattedNumber = (formattedNumber) => {
+  return parseFloat(formattedNumber.replace(/,/g, '')) || 0;
+};
+
 const RetirementPlanner = () => {
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
@@ -47,19 +51,19 @@ const RetirementPlanner = () => {
       <div className='inputs'>
       <div>
         <label>Current Retirement Assets:</label>
-        <input type="number" value={currentAssets} onChange={(e) => setCurrentAssets(e.target.value)} />
+        <input type="text" value={formatNumberWithCommas(currentAssets)} onChange={(e) => setCurrentAssets(e.target.value)} />
       </div>
       <div>
         <label>Years Till Retirement:</label>
-        <input type="number" value={yearsTillRetirement} onChange={(e) => setYearsTillRetirement(e.target.value)} />
+        <input type="text" value={yearsTillRetirement} onChange={(e) => setYearsTillRetirement(e.target.value)} />
       </div>
       <div>
         <label>End Retirement Total:</label>
-        <input type="number" value={endRetirementTotal} onChange={(e) => setEndRetirementTotal(e.target.value)} />
+        <input type="text" value={formatNumberWithCommas(endRetirementTotal)} onChange={(e) => setEndRetirementTotal(e.target.value)} />
       </div>
       <div>
         <label>Estimated Percent Return:</label>
-        <input type="number" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
+        <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
       </div>
       </div>
 
