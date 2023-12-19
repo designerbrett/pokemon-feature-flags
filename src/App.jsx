@@ -48,24 +48,26 @@ const RetirementPlanner = () => {
     const returnRate = parseFloat(estimatedReturn) / 100;
     const compoundingFactor = compoundingFrequency === 'yearly' ? 1 : 12;
     const contribution = parseFormattedNumber(contributionAmount);
-
+  
     const newResults = Array.from({ length: parseInt(yearsTillRetirement) * compoundingFactor }, (_, index) => {
       const yearlyReturn = currentTotal * returnRate;
       const monthlyReturn = yearlyReturn / 12;
-
+  
       const startingAmount = currentTotal;
-
-      currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn) + contribution;
-
+  
+      currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
+  
+      const totalWithContribution = currentTotal + contribution;
+  
       return {
         period: index + 1,
         startingAmount: formatNumberWithCommas(startingAmount.toFixed(2)),
         compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
         contributionAmount: formatNumberWithCommas(contribution.toFixed(2)),
-        total: formatNumberWithCommas(currentTotal.toFixed(2)),
+        total: formatNumberWithCommas(totalWithContribution.toFixed(2)),
       };
     });
-
+  
     setResults(newResults);
   };
 
