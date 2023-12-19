@@ -85,12 +85,12 @@ const RetirementPlanner = () => {
     <div>
       <h1>Savings Planner</h1>
 
-      <div>
-        <button onClick={toggleInputs}>{showInputs ? 'Hide Inputs' : 'Show Inputs'}</button>
-      </div>
-
       {(showInputs || !enteredValues) && (
         <div className='inputs'>
+          <div>
+            <button onClick={toggleInputs}>{showInputs ? 'Hide Inputs' : 'Show Inputs'}</button>
+          </div>
+          
           <div>
             <label>Current Assets:</label>
             <input
@@ -141,17 +141,17 @@ const RetirementPlanner = () => {
           <div>
             <button onClick={handleReset}>Reset</button>
           </div>
+
+          <div className='display-values'>
+            <p><strong>Current Assets:</strong> {`$${currentAssets}`}</p>
+            <p><strong>Years to save:</strong> {yearsTillRetirement}</p>
+            <p><strong>Estimated Return (%):</strong> {estimatedReturn}</p>
+            <p><strong>Contribution Amount:</strong> {`$${contributionAmount}`}</p>
+            <p><strong>Compounding Frequency:</strong> {compoundingFrequency}</p>
+          </div>
+
         </div>
       )}
-
-      <div className='display-values'>
-        <h2>Entered Values</h2>
-        <p><strong>Current Assets:</strong> {`$${currentAssets}`}</p>
-        <p><strong>Years to save:</strong> {yearsTillRetirement}</p>
-        <p><strong>Estimated Return (%):</strong> {estimatedReturn}</p>
-        <p><strong>Contribution Amount:</strong> {`$${contributionAmount}`}</p>
-        <p><strong>Compounding Frequency:</strong> {compoundingFrequency}</p>
-      </div>
 
       <div>
         <h2 className='results-heading'>Results</h2>
