@@ -15,6 +15,7 @@ const RetirementPlanner = () => {
   const [contributionAmount, setContributionAmount] = useState(localStorage.getItem('contributionAmount') || '');
   const [compoundingFrequency, setCompoundingFrequency] = useState('yearly');
   const [results, setResults] = useState([]);
+  const [showInputs, setShowInputs] = useState(true);
 
   useEffect(() => {
     localStorage.setItem('currentAssets', currentAssets);
@@ -60,62 +61,72 @@ const RetirementPlanner = () => {
     setCompoundingFrequency('yearly');
   };
 
+  const toggleInputs = () => {
+    setShowInputs(!showInputs);
+  };
+
   return (
     <div>
       <h1>Savings Planner</h1>
 
-      <div className='inputs'>
-        <div>
-          <label>Current Assets:</label>
-          <input
-            type="text"
-            inputMode="numeric" // Set inputMode to "numeric"
-            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
-            value={`$${currentAssets}`}
-            onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))}
-          />
-        </div>
-        <div>
-          <label>Years to save:</label>
-          <input
-            type="text"
-            inputMode="numeric" // Set inputMode to "numeric"
-            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
-            value={yearsTillRetirement}
-            onChange={(e) => setYearsTillRetirement(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Estimated Return (%):</label>
-          <input
-            type="text"
-            inputMode="numeric" // Set inputMode to "numeric"
-            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
-            value={estimatedReturn}
-            onChange={(e) => setEstimatedReturn(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Contribution Amount:</label>
-          <input
-            type="text"
-            inputMode="numeric" // Set inputMode to "numeric"
-            pattern="[0-9]*" // Add pattern attribute to further enforce numeric keyboard
-            value={`$${contributionAmount}`}
-            onChange={(e) => setContributionAmount(e.target.value.replace('$', ''))}
-          />
-        </div>
-        <div>
-          <label>Compounding Frequency:</label>
-          <select value={compoundingFrequency} onChange={(e) => setCompoundingFrequency(e.target.value)}>
-            <option value="yearly">Yearly</option>
-            <option value="monthly">Monthly</option>
-          </select>
-        </div>
-        <div>
-          <button onClick={handleReset}>Reset</button>
-        </div>
+      <div>
+        <button onClick={toggleInputs}>{showInputs ? 'Hide Inputs' : 'Show Inputs'}</button>
       </div>
+
+      {showInputs && (
+        <div className='inputs'>
+          <div>
+            <label>Current Assets:</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={`$${currentAssets}`}
+              onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))}
+            />
+          </div>
+          <div>
+            <label>Years to save:</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={yearsTillRetirement}
+              onChange={(e) => setYearsTillRetirement(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Estimated Return (%):</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={estimatedReturn}
+              onChange={(e) => setEstimatedReturn(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Contribution Amount:</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={`$${contributionAmount}`}
+              onChange={(e) => setContributionAmount(e.target.value.replace('$', ''))}
+            />
+          </div>
+          <div>
+            <label>Compounding Frequency:</label>
+            <select value={compoundingFrequency} onChange={(e) => setCompoundingFrequency(e.target.value)}>
+              <option value="yearly">Yearly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div>
+            <button onClick={handleReset}>Reset</button>
+          </div>
+        </div>
+      )}
 
       <div>
         <h2 className='results-heading'>Results</h2>
