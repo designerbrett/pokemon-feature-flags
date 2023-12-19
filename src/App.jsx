@@ -21,12 +21,18 @@ const RetirementPlanner = () => {
 
     const newResults = Array.from({ length: parseInt(yearsTillRetirement) }, (_, index) => {
       const yearlyReturn = currentTotal * returnRate;
-      currentTotal = currentTotal + yearlyContribution + yearlyReturn;
+
+      // Calculate the adjusted contribution as a percentage of the remaining amount needed
+      const remainingAmount = endRetirementTotal - currentTotal;
+      const adjustedContributionPercentage = remainingAmount > 0 ? yearlyContribution / remainingAmount : 0;
+      const adjustedContribution = adjustedContributionPercentage * remainingAmount;
+
+      currentTotal = currentTotal + adjustedContribution + yearlyReturn;
 
       return {
         year: index + 1,
         total: currentTotal.toFixed(2),
-        contribution: yearlyContribution.toFixed(2),
+        contribution: adjustedContribution.toFixed(2),
         yearlyReturn: yearlyReturn.toFixed(2),
       };
     });
