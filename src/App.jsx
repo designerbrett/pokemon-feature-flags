@@ -147,7 +147,7 @@ const RetirementPlanner = () => {
           </div>
         )}
 
-        <div className='display-values'>
+        <div className='display-values' style={{ display: showInputs ? 'none' : 'block' }}>
           <p><strong>Current Assets:</strong> {`$${currentAssets}`}</p>
           <p><strong>Years to save:</strong> {yearsTillRetirement}</p>
           <p><strong>Estimated Return (%):</strong> {estimatedReturn}</p>
