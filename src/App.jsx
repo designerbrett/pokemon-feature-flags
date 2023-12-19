@@ -12,29 +12,35 @@ const RetirementPlanner = () => {
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
   const [estimatedReturn, setEstimatedReturn] = useState(localStorage.getItem('estimatedReturn') || '');
+  const [compoundingFrequency, setCompoundingFrequency] = useState('yearly');
   const [results, setResults] = useState([]);
 
   useEffect(() => {
     localStorage.setItem('currentAssets', currentAssets);
     localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
     localStorage.setItem('estimatedReturn', estimatedReturn);
+    localStorage.setItem('compoundingFrequency', compoundingFrequency);
 
     calculateRetirementPlan();
-  }, [currentAssets, yearsTillRetirement, estimatedReturn]);
+  }, [currentAssets, yearsTillRetirement, estimatedReturn, compoundingFrequency]);
 
   const calculateRetirementPlan = () => {
-    let currentTotal = parseFloat(currentAssets);
+    let currentTotal = parseFormattedNumber(currentAssets);
     const returnRate = parseFloat(estimatedReturn) / 100;
+    const compoundingFactor = compoundingFrequency === 'yearly' ? 1 : 12; // Adjust the compounding factor based on frequency
 
-    const newResults = Array.from({ length: parseInt(yearsTillRetirement) }, (_, index) => {
+    const newResults = Array.from({ length: parseInt(yearsTillRetirement) * compoundingFactor }, (_, index) => {
       const yearlyReturn = currentTotal * returnRate;
+      const monthlyReturn = yearlyReturn / 12;
 
-      currentTotal = currentTotal + yearlyReturn;
+      currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
+
 
       return {
         year: index + 1,
         total: formatNumberWithCommas(currentTotal.toFixed(2)),
         yearlyReturn: formatNumberWithCommas(yearlyReturn.toFixed(2)),
+        compoundingFrequency: compoundingFrequency,
       };
     });
 
@@ -45,6 +51,7 @@ const RetirementPlanner = () => {
     setCurrentAssets('');
     setYearsTillRetirement('');
     setEstimatedReturn('');
+    setCompoundingFrequency('yearly');
   };
 
   return (
@@ -66,6 +73,13 @@ const RetirementPlanner = () => {
         <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
       </div>
       <div>
+        <label>Compounding Frequency:</label>
+        <select value={compoundingFrequency} onChange={(e) => setCompoundingFrequency(e.target.value)}>
+          <option value="yearly">Yearly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+      <div>
         <button onClick={handleReset}>Reset</button>
       </div>
       </div>
@@ -79,9 +93,9 @@ const RetirementPlanner = () => {
         </div>
           <div class="results">
           {results.map((result) => (
-              <div class="card" key={result.year}>
-                <div class="year">{result.year}</div>
-                <div><span className='dollar-sign'>$</span>{result.yearlyReturn}</div>
+              <div class="card" key={result.period}>
+                <div class="year">{result.period}</div>
+                <div><span className='dollar-sign'>$</span>{result.compoundingFrequency}</div>
                 <div><span className='dollar-sign'>$</span>{result.total}</div>
               </div>
             ))}
