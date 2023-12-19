@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
+const formatNumberWithCommas = (number) => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 const RetirementPlanner = () => {
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
@@ -27,8 +31,8 @@ const RetirementPlanner = () => {
 
       return {
         year: index + 1,
-        total: currentTotal.toFixed(2),
-        yearlyReturn: yearlyReturn.toFixed(2),
+        total: formatNumberWithCommas(currentTotal.toFixed(2)),
+        yearlyReturn: formatNumberWithCommas(yearlyReturn.toFixed(2)),
       };
     });
 
