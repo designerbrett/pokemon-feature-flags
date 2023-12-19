@@ -41,6 +41,13 @@ const RetirementPlanner = () => {
     setResults(newResults);
   };
 
+  const handleReset = () => {
+    setCurrentAssets('');
+    setYearsTillRetirement('');
+    setEndRetirementTotal('');
+    setEstimatedReturn('');
+  };
+
   return (
     <div>
       
@@ -48,16 +55,19 @@ const RetirementPlanner = () => {
 
       <div className='inputs'>
       <div>
-        <label>Current Retirement Assets:</label>
+        <label>Current Assets:</label>
         <input type="text" value={`$${currentAssets}`} onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))} />
       </div>
       <div>
-        <label>Years Till Retirement:</label>
+        <label>Years to save:</label>
         <input type="text" value={yearsTillRetirement} onChange={(e) => setYearsTillRetirement(e.target.value)} />
       </div>
       <div>
-        <label>Estimated Percent Return:</label>
+        <label>Estimated Return (%):</label>
         <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
+      </div>
+      <div>
+        <button onClick={handleReset}>Reset</button>
       </div>
       </div>
 
