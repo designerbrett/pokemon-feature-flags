@@ -47,8 +47,7 @@ h2 {
   text-transform: uppercase;
 }
 .display-values {
-  display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 .display-values strong {
   display: block;
