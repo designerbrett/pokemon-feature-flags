@@ -12,6 +12,8 @@ const RetirementPlanner = () => {
     localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
     localStorage.setItem('endRetirementTotal', endRetirementTotal);
     localStorage.setItem('estimatedReturn', estimatedReturn);
+
+    calculateRetirementPlan();
   }, [currentAssets, yearsTillRetirement, endRetirementTotal, estimatedReturn]);
 
   const calculateRetirementPlan = () => {
@@ -59,7 +61,6 @@ const RetirementPlanner = () => {
         <label>Estimated Percent Return:</label>
         <input type="number" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
       </div>
-      <button onClick={calculateRetirementPlan}>Calculate</button>
       <div>
         <h2>Results</h2>
         <table>
