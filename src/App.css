@@ -19,12 +19,12 @@ input {
 }
 
 .inputs {
-  background-color: #f1f1f1;
+  background-color: hsl(0 0% 97% / 1);
   padding: 24px;
   border-radius: 8px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid hsl(0 0% 93% / 1);
   margin: 16px 0;
-  box-shadow: 1px 0.625rem 0 #353a3e0f,0 0.125rem 0.25rem 0 #353a3e14;
+  box-shadow: 0 0.125rem 0.25rem 0 #353a3e14;
 }
 .inputs label {
   font-size: 0.8rem;
@@ -41,6 +41,17 @@ input {
   font-family: 'VarelaRoundRegular', sans-serif;
 }
 
+.results-heading {
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+.results-header {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #555;
+}
 .results-header div {
   display: inline-block;
   vertical-align: baseline;

@@ -71,7 +71,7 @@ const RetirementPlanner = () => {
       </div>
 
       <div>
-        <h2>Results</h2>
+        <h2 className='results-heading'>Results</h2>
         <div className='results-header'>
           <div class="year">Year</div>
           <div>Yearly Return</div>
