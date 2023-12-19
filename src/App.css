@@ -10,10 +10,18 @@ input {
   display: block;
   width: 100%;
 }
+
+.inputs label {
+  font-size: 0.8rem;
+  color: #777;
+  font-weight: bold;
+  text-transform: uppercase;
+}
 .inputs input {
   font-size: 2.5rem;
   padding-left: 0;
   border-bottom: 1px solid #CCC;
+  margin-bottom: 16px;
 }
 
 
