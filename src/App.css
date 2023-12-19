@@ -51,6 +51,9 @@ input {
   font-size: 1rem;
   font-weight: bold;
   color: #555;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 .results-header div {
   display: inline-block;
