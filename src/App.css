@@ -71,14 +71,10 @@ h2 {
   padding: 8px 0;
 }
 .results-header div {
-  display: inline-block;
-  vertical-align: baseline;
-  width: 43%;
-  margin-right: 1%;
+  display: flex;
   text-align: right;
 }
 .results-header div.year {
-  width: 10%;
   text-align: left;
 }
 
@@ -94,14 +90,10 @@ h2 {
   font-family: 'VarelaRoundRegular', sans-serif;
 }
 .results .card div {
-  display: inline-block;
-  vertical-align: baseline;
-  width: 43%;
-  margin-right: 1%;
+  display: flex;
   text-align: right;
 }
 .results .card div.year {
-  width: 10%;
   text-align: left;
 }
 .results .dollar-sign {
