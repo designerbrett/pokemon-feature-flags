@@ -191,9 +191,9 @@ const RetirementPlanner = () => {
         <div className='totals-section'>
           <h2>Totals</h2>
           <p><strong>Final Balance:</strong> ${finalBalance}</p>
-          <p><strong>Compound Interest Accrued:</strong> ${compoundInterestAccrued}</p>
+          <p><strong>Interest Accrued:</strong> ${compoundInterestAccrued}</p>
           <p><strong>Total Contributions:</strong> ${getTotal('contributionAmount')}</p>
-          <p><strong>Percentage Return:</strong> {(((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
+          <p><strong>Return:</strong> {(((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
         </div>
 
       </div>

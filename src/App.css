@@ -12,7 +12,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-size: 20px;
   padding: 16px;
-  margin-bottom: 200px;
+  margin-bottom: 400px;
 }
 input {
   display: block;
@@ -78,7 +78,7 @@ h2 {
   background-color: #FFF;
   padding: 8px 0;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 .results-header div {
   text-align: right;
@@ -98,7 +98,7 @@ h2 {
   padding: 8px;
   font-family: 'VarelaRoundRegular', sans-serif;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 .results .card div {
   text-align: right;
@@ -120,5 +120,7 @@ h2 {
   width: 96%;
   border-radius: 8px;
   color: #FFF;
+  display: flex;
+  justify-content: space-between;
 }
 
