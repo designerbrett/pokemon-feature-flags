@@ -8,6 +8,45 @@ const parseFormattedNumber = (formattedNumber) => {
   return parseFloat(formattedNumber.replace(/,/g, '')) || 0;
 };
 
+import { Bar } from 'react-chartjs-2';
+
+const Chart = ({ results }) => {
+  const data = {
+    labels: results.map(result => result.period),
+    datasets: [
+      {
+        label: 'Total',
+        data: results.map(result => parseFormattedNumber(result.total)),
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    scales: {
+      x: {
+        type: 'linear',
+        position: 'bottom',
+        title: {
+          display: true,
+          text: 'Year',
+        },
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Total',
+        },
+      },
+    },
+  };
+
+  return <Bar data={data} options={options} />;
+};
+
 const RetirementPlanner = () => {
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
@@ -195,6 +234,8 @@ const RetirementPlanner = () => {
           <p><strong>Total Contributions:</strong> ${getTotal('contributionAmount')}</p>
           <p><strong>Return:</strong> {(((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
         </div>
+
+        <Chart results={results} />
 
       </div>
     </div>
