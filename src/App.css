@@ -12,6 +12,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-size: 20px;
   padding: 16px;
+  margin-bottom: 200px;
 }
 input {
   display: block;
@@ -109,5 +110,15 @@ h2 {
   font-size: 1rem;
   color: #555;
 }
-
+.totals-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: #333;
+  padding: 2%;
+  margin: 2%;
+  width: 96%;
+  border-radius: 8px;
+  color: #FFF;
+}
 
