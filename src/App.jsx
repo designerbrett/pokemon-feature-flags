@@ -50,8 +50,8 @@ const RetirementPlanner = () => {
 
       <div className='inputs'>
       <div>
-      <label>Current Retirement Assets:</label>
-        <input type="text" value={`$${formatNumberWithCommas(currentAssets)}`} onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))} />
+        <label>Current Retirement Assets:</label>
+        <input type="text" value={`$${currentAssets}`} onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))} />
       </div>
       <div>
         <label>Years Till Retirement:</label>
