@@ -11,18 +11,16 @@ const parseFormattedNumber = (formattedNumber) => {
 const RetirementPlanner = () => {
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
-  const [endRetirementTotal, setEndRetirementTotal] = useState(localStorage.getItem('endRetirementTotal') || '');
   const [estimatedReturn, setEstimatedReturn] = useState(localStorage.getItem('estimatedReturn') || '');
   const [results, setResults] = useState([]);
 
   useEffect(() => {
     localStorage.setItem('currentAssets', currentAssets);
     localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
-    localStorage.setItem('endRetirementTotal', endRetirementTotal);
     localStorage.setItem('estimatedReturn', estimatedReturn);
 
     calculateRetirementPlan();
-  }, [currentAssets, yearsTillRetirement, endRetirementTotal, estimatedReturn]);
+  }, [currentAssets, yearsTillRetirement, estimatedReturn]);
 
   const calculateRetirementPlan = () => {
     let currentTotal = parseFloat(currentAssets);
@@ -73,6 +71,17 @@ const RetirementPlanner = () => {
               <th>Yearly Return</th>
             </tr>
           </thead>
+          <div>
+          {results.map((result) => (
+              <div class="card" key={result.year}>
+                <div>{result.year}</div>
+                <div>${result.total}</div>
+                <div>${result.yearlyReturn}</div>
+              </div>
+            ))}
+          </div>
+
+
           <tbody>
             {results.map((result) => (
               <tr key={result.year}>
