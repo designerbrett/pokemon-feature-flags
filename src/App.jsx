@@ -23,16 +23,41 @@ const RetirementPlanner = () => {
     const newResults = Array.from({ length: parseInt(yearsTillRetirement) }, (_, index) => {
       const yearlyReturn = currentTotal * returnRate;
 
-      currentTotal = currentTotal + yearlyReturn;
-
       return {
         year: index + 1,
+        total: currentTotal.toFixed(2),
+        yearlyReturn: yearlyReturn.toFixed(2),
+        contribution: 0, // Initialize with 0 contribution
+      };
+    });
+
+    setResults(newResults);
+  };
+
+  const handleManualContributionChange = (index, value) => {
+    const updatedResults = [...results];
+    updatedResults[index].contribution = parseFloat(value) || 0;
+    setResults(updatedResults);
+  };
+
+  const updateResults = () => {
+    let currentTotal = parseFloat(currentAssets);
+    const returnRate = parseFloat(estimatedReturn) / 100;
+
+    const updatedResults = results.map((result, index) => {
+      const yearlyReturn = currentTotal * returnRate;
+      const adjustedContribution = result.contribution || 0;
+
+      currentTotal = currentTotal + adjustedContribution + yearlyReturn;
+
+      return {
+        ...result,
         total: currentTotal.toFixed(2),
         yearlyReturn: yearlyReturn.toFixed(2),
       };
     });
 
-    setResults(newResults);
+    setResults(updatedResults);
   };
 
   return (
@@ -62,14 +87,23 @@ const RetirementPlanner = () => {
               <th>Year</th>
               <th>Total</th>
               <th>Yearly Return</th>
+              <th>Contribution</th>
             </tr>
           </thead>
           <tbody>
-            {results.map((result) => (
+            {results.map((result, index) => (
               <tr key={result.year}>
                 <td>{result.year}</td>
                 <td>${result.total}</td>
                 <td>${result.yearlyReturn}</td>
+                <td>
+                  <input
+                    type="number"
+                    value={result.contribution}
+                    onChange={(e) => handleManualContributionChange(index, e.target.value)}
+                    onBlur={updateResults}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
