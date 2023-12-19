@@ -35,7 +35,10 @@ input {
 .results {
   max-width: 100%;
 }
-.results div {
+.results .card {
+  width: 100%;
+}
+.results .card div {
   display: inline-block;
   vertical-align: baseline;
   width: 33%;
