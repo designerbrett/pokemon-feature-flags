@@ -63,7 +63,7 @@ const RetirementPlanner = () => {
       </div>
       <div>
         <label>Estimated Return (%):</label>
-        <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value.replace('', '%'))} />
+        <input type="text" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
       </div>
       <div>
         <button onClick={handleReset}>Reset</button>
