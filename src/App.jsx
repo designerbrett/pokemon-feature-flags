@@ -41,7 +41,10 @@ const RetirementPlanner = () => {
 
   return (
     <div>
+      
       <h1>Retirement Planner</h1>
+
+      <div className='inputs'>
       <div>
         <label>Current Retirement Assets:</label>
         <input type="number" value={currentAssets} onChange={(e) => setCurrentAssets(e.target.value)} />
@@ -58,6 +61,8 @@ const RetirementPlanner = () => {
         <label>Estimated Percent Return:</label>
         <input type="number" value={estimatedReturn} onChange={(e) => setEstimatedReturn(e.target.value)} />
       </div>
+      </div>
+
       <div>
         <h2>Results</h2>
         <table>
