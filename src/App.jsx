@@ -16,28 +16,14 @@ const RetirementPlanner = () => {
   const [compoundingFrequency, setCompoundingFrequency] = useState('yearly');
   const [results, setResults] = useState([]);
   const [showInputs, setShowInputs] = useState(true);
-  const [enteredValues, setEnteredValues] = useState({
-    currentAssets: '',
-    yearsTillRetirement: '',
-    estimatedReturn: '',
-    contributionAmount: '',
-    compoundingFrequency: 'yearly',
-  });
 
   useEffect(() => {
-    setEnteredValues({
-      currentAssets,
-      yearsTillRetirement,
-      estimatedReturn,
-      contributionAmount,
-      compoundingFrequency,
-    });
-
     localStorage.setItem('currentAssets', currentAssets);
     localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
     localStorage.setItem('estimatedReturn', estimatedReturn);
     localStorage.setItem('contributionAmount', contributionAmount);
     localStorage.setItem('compoundingFrequency', compoundingFrequency);
+
 
     calculateRetirementPlan();
   }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency]);
@@ -143,6 +129,15 @@ const RetirementPlanner = () => {
         </div>
       )}
 
+      <div className='display-values'>
+        <h2>Entered Values</h2>
+        <p><strong>Current Assets:</strong> {`$${currentAssets}`}</p>
+        <p><strong>Years to save:</strong> {yearsTillRetirement}</p>
+        <p><strong>Estimated Return (%):</strong> {estimatedReturn}</p>
+        <p><strong>Contribution Amount:</strong> {`$${contributionAmount}`}</p>
+        <p><strong>Compounding Frequency:</strong> {compoundingFrequency}</p>
+      </div>
+
       <div>
         <h2 className='results-heading'>Results</h2>
         <div className='results-header'>
@@ -155,7 +150,7 @@ const RetirementPlanner = () => {
         <div class="results">
           {results.map((result) => (
             <div class="card" key={result.period}>
-              <div class="period">{result.period}</div>
+              <div class="year">{result.period}</div>
               <div><span className='dollar-sign'>$</span>{result.startingAmount}</div>
               <div><span className='dollar-sign'>$</span>{result.compoundingAmount}</div>
               <div><span className='dollar-sign'>$</span>{result.contributionAmount}</div>
