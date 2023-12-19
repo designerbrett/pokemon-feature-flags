@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Chart from 'chart.js';
 
 const formatNumberWithCommas = (number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -6,53 +7,6 @@ const formatNumberWithCommas = (number) => {
 
 const parseFormattedNumber = (formattedNumber) => {
   return parseFloat(formattedNumber.replace(/,/g, '')) || 0;
-};
-
-// Add this ref in your render function
-const chartRef = useRef(null);
-
-const updateChart = () => {
-  const ctx = chartRef.current.getContext('2d');
-
-  const labels = results.map(result => result.period);
-  const data = results.map(result => parseFormattedNumber(result.total));
-
-  if (window.myBarChart) {
-    window.myBarChart.destroy();
-  }
-
-  window.myBarChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Total',
-        data: data,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-      }],
-    },
-    options: {
-      scales: {
-        x: {
-          type: 'linear',
-          position: 'bottom',
-          title: {
-            display: true,
-            text: 'Year',
-          },
-        },
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Total',
-          },
-        },
-      },
-    },
-  });
 };
 
 
@@ -72,6 +26,8 @@ const RetirementPlanner = () => {
     compoundingFrequency: 'yearly',
   });
 
+  const chartRef = useRef(null);
+
   useEffect(() => {
     setEnteredValues({
       currentAssets,
@@ -87,6 +43,50 @@ const RetirementPlanner = () => {
     localStorage.setItem('contributionAmount', contributionAmount);
     localStorage.setItem('compoundingFrequency', compoundingFrequency);
   
+    const updateChart = () => {
+      const ctx = chartRef.current.getContext('2d');
+
+      const labels = results.map(result => result.period);
+      const data = results.map(result => parseFormattedNumber(result.total));
+
+      if (window.myBarChart) {
+        window.myBarChart.destroy();
+      }
+
+      window.myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Total',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'linear',
+              position: 'bottom',
+              title: {
+                display: true,
+                text: 'Year',
+              },
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Total',
+              },
+            },
+          },
+        },
+      });
+    };
+
     calculateRetirementPlan();
     updateChart(); // Call the updateChart function
   }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency, results]);
