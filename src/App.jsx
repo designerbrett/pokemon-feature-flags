@@ -72,6 +72,11 @@ const RetirementPlanner = () => {
 
       <div>
         <h2>Results</h2>
+        <div className='results-header'>
+          <div class="year">Year</div>
+          <div>Yearly Return</div>
+          <div>End Total</div>
+        </div>
           <div class="results">
           {results.map((result) => (
               <div class="card" key={result.year}>
