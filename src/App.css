@@ -48,6 +48,7 @@ h2 {
 }
 .display-values {
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 @media (max-width:480px)  {
   .display-values {
