@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Chart from 'chart.js/auto';
+import React, { useState, useEffect } from 'react';
 
 const formatNumberWithCommas = (number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -8,7 +7,6 @@ const formatNumberWithCommas = (number) => {
 const parseFormattedNumber = (formattedNumber) => {
   return parseFloat(formattedNumber.replace(/,/g, '')) || 0;
 };
-
 
 const RetirementPlanner = () => {
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
@@ -26,8 +24,6 @@ const RetirementPlanner = () => {
     compoundingFrequency: 'yearly',
   });
 
-  const chartRef = useRef(null);
-
   useEffect(() => {
     setEnteredValues({
       currentAssets,
@@ -43,82 +39,37 @@ const RetirementPlanner = () => {
     localStorage.setItem('contributionAmount', contributionAmount);
     localStorage.setItem('compoundingFrequency', compoundingFrequency);
 
-    const updateChart = () => {
-      const ctx = chartRef.current.getContext('2d');
-
-      const labels = results.map(result => result.period);
-      const data = results.map(result => parseFormattedNumber(result.total));
-
-      if (window.myBarChart) {
-        window.myBarChart.destroy();
-      }
-
-      window.myBarChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Total',
-            data: data,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
-          }],
-        },
-        options: {
-          scales: {
-            x: {
-              type: 'linear',
-              position: 'bottom',
-              title: {
-                display: true,
-                text: 'Year',
-              },
-            },
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Total',
-              },
-            },
-          },
-        },
-      });
-    };
 
     calculateRetirementPlan();
-    updateChart(); // Call the updateChart function
-  }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency, results]);
+  }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency]);
 
   const calculateRetirementPlan = () => {
-    let currentTotal = parseFormattedNumber(currentAssets);
-    const returnRate = parseFloat(estimatedReturn) / 100;
-    const compoundingFactor = compoundingFrequency === 'yearly' ? 1 : 12;
-    const contribution = parseFormattedNumber(contributionAmount);
+  let currentTotal = parseFormattedNumber(currentAssets);
+  const returnRate = parseFloat(estimatedReturn) / 100;
+  const compoundingFactor = compoundingFrequency === 'yearly' ? 1 : 12;
+  const contribution = parseFormattedNumber(contributionAmount);
 
-    const newResults = Array.from({ length: parseInt(yearsTillRetirement) * compoundingFactor }, (_, index) => {
-      const yearlyReturn = currentTotal * returnRate;
-      const monthlyReturn = yearlyReturn / 12;
+  const newResults = Array.from({ length: parseInt(yearsTillRetirement) * compoundingFactor }, (_, index) => {
+    const yearlyReturn = currentTotal * returnRate;
+    const monthlyReturn = yearlyReturn / 12;
 
-      const startingAmount = currentTotal;
+    const startingAmount = currentTotal;
 
-      currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
+    currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
 
-      const totalWithContribution = currentTotal + contribution;
+    const totalWithContribution = currentTotal + contribution;
 
-      return {
-        period: index + 1,
-        startingAmount: formatNumberWithCommas(startingAmount.toFixed(2)),
-        compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
-        contributionAmount: formatNumberWithCommas(contribution.toFixed(2)),
-        total: formatNumberWithCommas(totalWithContribution.toFixed(2)),
-      };
-    });
+    return {
+      period: index + 1,
+      startingAmount: formatNumberWithCommas(startingAmount.toFixed(2)),
+      compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
+      contributionAmount: formatNumberWithCommas(contribution.toFixed(2)),
+      total: formatNumberWithCommas(totalWithContribution.toFixed(2)),
+    };
+  });
 
-    // Use the functional form of setResults
-    setResults(prevResults => [...prevResults, ...newResults]);
-  };
+  setResults(newResults);
+};
 
   const handleReset = () => {
     setCurrentAssets('');
@@ -244,8 +195,6 @@ const RetirementPlanner = () => {
           <p><strong>Total Contributions:</strong> ${getTotal('contributionAmount')}</p>
           <p><strong>Return:</strong> {(((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
         </div>
-
-        <canvas ref={chartRef}></canvas>
 
       </div>
     </div>
