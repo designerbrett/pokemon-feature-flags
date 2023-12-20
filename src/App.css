@@ -99,6 +99,11 @@ h2 {
   display: flex;
   justify-content: space-between;
 }
+only screen and (min-width: 480px) {
+  .results .card {
+    font-size: .75rem;
+  }
+}
 .results .card div {
   text-align: right;
 }
