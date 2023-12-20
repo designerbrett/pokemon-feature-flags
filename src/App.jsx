@@ -84,7 +84,7 @@ const RetirementPlanner = () => {
   };
 
   const getTotal = (property) => {
-    return results.reduce((total, result) => total + parseFloat(result[property].replace(/,/g, '')), 0).toFixed(2);
+    return results.reduce((total, result) => total + parseFloat(result[property].replace(/,/g, '')), 0).toFixed(0);
   };
 
   // Calculate final balance and compound interest accrued separately
