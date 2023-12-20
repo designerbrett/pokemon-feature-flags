@@ -39,37 +39,36 @@ const RetirementPlanner = () => {
     localStorage.setItem('contributionAmount', contributionAmount);
     localStorage.setItem('compoundingFrequency', compoundingFrequency);
 
-
     calculateRetirementPlan();
   }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency]);
 
   const calculateRetirementPlan = () => {
-  let currentTotal = parseFormattedNumber(currentAssets);
-  const returnRate = parseFloat(estimatedReturn) / 100;
-  const compoundingFactor = compoundingFrequency === 'yearly' ? 1 : 12;
-  const contribution = parseFormattedNumber(contributionAmount);
+    let currentTotal = parseFormattedNumber(currentAssets);
+    const returnRate = parseFloat(estimatedReturn) / 100;
+    const compoundingFactor = compoundingFrequency === 'yearly' ? 1 : 12;
+    const contribution = parseFormattedNumber(contributionAmount);
 
-  const newResults = Array.from({ length: parseInt(yearsTillRetirement) * compoundingFactor }, (_, index) => {
-    const yearlyReturn = currentTotal * returnRate;
-    const monthlyReturn = yearlyReturn / 12;
+    const newResults = Array.from({ length: parseInt(yearsTillRetirement) * compoundingFactor }, (_, index) => {
+      const yearlyReturn = currentTotal * returnRate;
+      const monthlyReturn = yearlyReturn / 12;
 
-    const startingAmount = currentTotal;
+      const startingAmount = currentTotal;
 
-    currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
+      currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
 
-    const totalWithContribution = currentTotal + contribution;
+      const totalWithContribution = currentTotal + contribution;
 
-    return {
-      period: index + 1,
-      startingAmount: formatNumberWithCommas(startingAmount.toFixed(2)),
-      compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
-      contributionAmount: formatNumberWithCommas(contribution.toFixed(2)),
-      total: formatNumberWithCommas(totalWithContribution.toFixed(2)),
-    };
-  });
+      return {
+        period: index + 1,
+        startingAmount: formatNumberWithCommas(startingAmount.toFixed(2)),
+        compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
+        contributionAmount: formatNumberWithCommas(contribution.toFixed(2)),
+        total: formatNumberWithCommas(totalWithContribution.toFixed(2)),
+      };
+    });
 
-  setResults(newResults);
-};
+    setResults(newResults);
+  };
 
   const handleReset = () => {
     setCurrentAssets('');
@@ -87,10 +86,10 @@ const RetirementPlanner = () => {
     return results.reduce((total, result) => total + parseFloat(result[property].replace(/,/g, '')), 0).toFixed(2);
   };
 
-  // Calculate final balance and compound interest accrued separately
-  const finalBalance = getTotal('total');
+  const finalBalance = results.length > 0 ? results[results.length - 1].total : 0;
   const compoundInterestAccrued = finalBalance - getTotal('startingAmount');
-
+  const totalContributions = getTotal('contributionAmount');
+  const returnPercentage = ((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100;
 
   return (
     <div>
@@ -103,8 +102,6 @@ const RetirementPlanner = () => {
 
         {(showInputs || !enteredValues) && (
           <div className='inputs'>
-
-            
             <div>
               <label>Current Assets:</label>
               <input
@@ -189,13 +186,12 @@ const RetirementPlanner = () => {
         </div>
 
         <div className='totals-section'>
-          
+          <h2>Totals</h2>
           <p><strong>Final Balance:</strong> ${finalBalance}</p>
           <p><strong>Interest Accrued:</strong> ${compoundInterestAccrued.toFixed(2)}</p>
-          <p><strong>Total Contributions:</strong> ${getTotal('contributionAmount')}</p>
-          <p><strong>Return:</strong> {(((finalBalance - getTotal('startingAmount')) / getTotal('startingAmount')) * 100).toFixed(2)}%</p>
+          <p><strong>Total Contributions:</strong> ${totalContributions}</p>
+          <p><strong>Return:</strong> {returnPercentage.toFixed(2)}%</p>
         </div>
-
       </div>
     </div>
   );
