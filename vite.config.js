@@ -6,10 +6,4 @@ export default defineConfig({
   plugins: [reactRefresh()]
 })
 
-export default {
-  build: {
-    rollupOptions: {
-      external: ['chart.js'],
-    },
-  },
-};
+
