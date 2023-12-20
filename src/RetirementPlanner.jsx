@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Modal from 'react-modal';
 import OptionsModal from './components/OptionsModal';
 import { Link } from 'react-router-dom';
-import { auth } from './firebase';
+import { auth } from './components/firebase';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 
@@ -148,6 +148,7 @@ const RetirementPlanner = ({ user }) => {
             </div>
             <div>
               <label>Years to save:</label>
+              <div className="numeric-input">
               <input
                 type="text"
                 inputMode="numeric"
@@ -155,16 +156,23 @@ const RetirementPlanner = ({ user }) => {
                 value={yearsTillRetirement}
                 onChange={(e) => setYearsTillRetirement(e.target.value)}
               />
+              <button onClick={() => setYearsTillRetirement((prev) => (prev ? parseInt(prev) - 1 : prev))}>-</button>
+              <button onClick={() => setYearsTillRetirement((prev) => (prev ? parseInt(prev) + 1 : prev))}>+</button>
+            </div>
             </div>
             <div>
               <label>Estimated Return (%):</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={estimatedReturn}
-                onChange={(e) => setEstimatedReturn(e.target.value)}
-              />
+              <div className="numeric-input">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={estimatedReturn}
+                  onChange={(e) => setEstimatedReturn(e.target.value)}
+                />
+                <button onClick={() => setEstimatedReturn((prev) => (prev ? parseInt(prev) - 1 : prev))}>-</button>
+                <button onClick={() => setEstimatedReturn((prev) => (prev ? parseInt(prev) + 1 : prev))}>+</button>
+              </div>
             </div>
             <div>
               <label>Contribution Amount:</label>

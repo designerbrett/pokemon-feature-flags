@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { googleProvider } from './firebase'; // Import auth from firebase.js
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 // Initialize Firebase with your configuration
 const firebaseConfig = {
@@ -16,7 +17,7 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
+const authInstance = getAuth(firebaseApp);
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ const SignUp = () => {
   const handleSignUp = async () => {
     try {
       // Check if the email is already in use
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(authInstance, email, password);
 
       // If successful, you can access the user information using userCredential.user
       const user = userCredential.user;
@@ -55,6 +56,16 @@ const SignUp = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(authInstance, googleProvider);
+      const user = result.user;
+      console.log('Google Sign-In Successful:', user);
+    } catch (error) {
+      console.error('Error signing in with Google:', error.message);
+    }
+  };
+
   return (
     <div>
       <h2>Sign Up</h2>
@@ -72,6 +83,10 @@ const SignUp = () => {
           Sign Up
         </button>
       </form>
+      <div>
+        {/* Your other components */}
+        <button onClick={handleGoogleSignIn}>Sign up with Google</button>
+      </div>
     </div>
   );
 };

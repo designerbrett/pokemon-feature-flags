@@ -4,8 +4,8 @@ import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import RetirementPlanner from './RetirementPlanner';
 import UserAccount from './UserAccount';
-import { onAuthStateChange } from './firebase';
-import { auth } from './firebase';
+import { onAuthStateChange } from './components/firebase';
+import { auth } from './components/firebase';
 
 const App = () => {
   const [user, setUser] = useState(null);

@@ -1,6 +1,6 @@
 // firebase.js
 import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyByeY2xsTIp9elKp3pG6Hdta0fc0w63sPY",
@@ -16,7 +16,9 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
-export { auth };
+const googleProvider = new GoogleAuthProvider();
+
+export { auth, googleProvider };
 
 // Set up onAuthStateChanged listener
 export const onAuthStateChange = (callback) => {

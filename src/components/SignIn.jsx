@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 
 // Initialize Firebase with your configuration
@@ -38,6 +38,16 @@ const SignIn = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(authInstance, googleProvider);
+      const user = result.user;
+      console.log('Google Sign-In Successful:', user);
+    } catch (error) {
+      console.error('Error signing in with Google:', error.message);
+    }
+  };
+
   return (
     <div>
       <h2>Sign In</h2>
@@ -51,6 +61,10 @@ const SignIn = () => {
           Sign In
         </button>
       </form>
+      <div>
+        {/* Your other components */}
+        <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+      </div>
       <p>
         Don't have an account? <Link to="/signup">Sign Up</Link>
       </p>
