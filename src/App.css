@@ -49,6 +49,11 @@ h2 {
 .display-values {
   justify-content: space-between;
 }
+@media (max-width:480px)  {
+  .display-values {
+    font-size: .75rem;
+  }
+}
 .display-values strong {
   display: block;
 }
@@ -104,6 +109,7 @@ h2 {
   font-family: 'VarelaRoundRegular', sans-serif;
   display: flex;
   justify-content: space-between;
+  gap: 16px;
 }
 @media (max-width:480px)  {
   .results .card {
@@ -114,7 +120,8 @@ h2 {
   text-align: right;
 }
 .results .card div.year {
-  text-align: left;
+  text-align: right;
+  min-width: 38px;
 }
 .results .dollar-sign {
   font-size: 1rem;
@@ -138,6 +145,7 @@ h2 {
   color: #FFF;
   display: flex;
   justify-content: space-between;
+  gap: 16px;
 }
 @media (max-width:480px)  {
   .totals-section {
