@@ -5,3 +5,11 @@ import reactRefresh from '@vitejs/plugin-react-refresh'
 export default defineConfig({
   plugins: [reactRefresh()]
 })
+
+export default {
+  build: {
+    rollupOptions: {
+      external: ['chart.js'],
+    },
+  },
+};
