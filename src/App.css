@@ -93,6 +93,7 @@ h2 {
 
 .results {
   max-width: 100%;
+  margin-bottom: 100px;
 }
 .results .card:nth-child(even) {
   background: #f1f1f1;
@@ -125,9 +126,9 @@ h2 {
   }
 }
 .totals-section {
-  /*position: fixed;
+  position: fixed;
   bottom: 0;
-  left: 0;*/
+  left: 0;
   background: #333;
   padding: 2%;
   margin: 2%;
@@ -136,5 +137,10 @@ h2 {
   color: #FFF;
   display: flex;
   justify-content: space-between;
+}
+@media (max-width:480px)  {
+  .totals-section {
+    font-size: 0.75rem;
+  }
 }
 
