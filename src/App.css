@@ -13,7 +13,7 @@ body {
   font-size: 20px;
   padding: 16px;
 }
-input {
+.input-container input {
   display: block;
   width: 100%;
 }
@@ -157,5 +157,23 @@ h2 {
   .totals-section {
     font-size: 0.75rem;
   }
+}
+
+.ReactModal__Overlay.ReactModal__Overlay--after-open {
+  z-index: 4;
+}
+.ReactModal__Content div {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+.ReactModal__Content div input {
+  margin-right: 8px;
+}
+.close-button {
+  position: absolute;
+  right: 24px;
+  font-size: 32px;
 }
 
