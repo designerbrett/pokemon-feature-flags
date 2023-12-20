@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import RetirementPlanner from './RetirementPlanner';
+import UserAccount from './UserAccount';
 import { onAuthStateChange } from './firebase';
 import { auth } from './firebase';
 
@@ -29,7 +30,7 @@ const App = () => {
           </div>
         ) : (
           <div>
-            <p>Welcome, {user.email}</p>
+            <p>Welcome, <Link to="/user-account">{user.email}</Link></p>
             <button onClick={() => auth.signOut()}>Sign Out</button>
           </div>
         )}
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/retirement-planner" element={<RetirementPlanner user={user} />} />
+          <Route path="/user-account" element={<UserAccount user={user} />} />
           <Route path="*" element={<Home user={user} />} /> {/* Change the route path to "*" */}
           {/* Add other routes as needed */}
         </Routes>
