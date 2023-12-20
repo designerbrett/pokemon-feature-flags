@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Chart from 'chart.js';
+import Chart from '/chart.js';
 
 const formatNumberWithCommas = (number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
