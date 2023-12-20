@@ -9,8 +9,6 @@ const parseFormattedNumber = (formattedNumber) => {
 };
 
 const RetirementPlanner = () => {
-  const [userProgress, setUserProgress] = useState([]);
-  const [yearsForUserProgress, setYearsForUserProgress] = useState('');
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
   const [estimatedReturn, setEstimatedReturn] = useState(localStorage.getItem('estimatedReturn') || '');
@@ -45,40 +43,28 @@ const RetirementPlanner = () => {
     calculateRetirementPlan();
   }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency]);
 
-const calculateRetirementPlan = () => {
+  const calculateRetirementPlan = () => {
   let currentTotal = parseFormattedNumber(currentAssets);
   const returnRate = parseFloat(estimatedReturn) / 100;
   const compoundingFactor = compoundingFrequency === 'yearly' ? 1 : 12;
   const contribution = parseFormattedNumber(contributionAmount);
 
-  const newUserProgress = userProgress.map(user => ({
-    startingAmount: parseFormattedNumber(user.startingAmount),
-    contribution: parseFormattedNumber(user.contribution),
-    interest: parseFormattedNumber(user.interest),
-  }));
-
   const newResults = Array.from({ length: parseInt(yearsTillRetirement) * compoundingFactor }, (_, index) => {
     const yearlyReturn = currentTotal * returnRate;
     const monthlyReturn = yearlyReturn / 12;
 
-    const userProgressValues = newUserProgress[index] || { startingAmount: 0, contribution: 0, interest: 0 };
+    const startingAmount = currentTotal;
 
-    const startingAmount = currentTotal + userProgressValues.startingAmount;
-    const contributions = contribution + userProgressValues.contribution;
-    const interest = userProgressValues.interest;
-    const compoundInterestAccrued = currentTotal + contributions + interest - startingAmount;
+    currentTotal = currentTotal + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
 
-    currentTotal = startingAmount + (compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
-
-    const totalWithContribution = currentTotal + contributions;
+    const totalWithContribution = currentTotal + contribution;
 
     return {
       period: index + 1,
       startingAmount: formatNumberWithCommas(startingAmount.toFixed(2)),
       compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
-      contributionAmount: formatNumberWithCommas(contributions.toFixed(2)),
+      contributionAmount: formatNumberWithCommas(contribution.toFixed(2)),
       total: formatNumberWithCommas(totalWithContribution.toFixed(2)),
-      compoundInterestAccrued: formatNumberWithCommas(compoundInterestAccrued.toFixed(2)),
     };
   });
 
@@ -92,39 +78,6 @@ const calculateRetirementPlan = () => {
     setContributionAmount('');
     setCompoundingFrequency('yearly');
   };
-
-  useEffect(() => {
-    const newYearsForUserProgress = parseInt(yearsTillRetirement) || 0;
-    setYearsForUserProgress(newYearsForUserProgress);
-
-    const newUserProgress = Array.from({ length: newYearsForUserProgress }, (_, index) => ({
-      startingAmount: '',
-      contribution: '',
-      interest: '',
-    }));
-
-    setUserProgress(newUserProgress);
-  }, [yearsTillRetirement]);
-
-  function handleUserInputChange(index, field, value) {
-    const newUserProgress = userProgress.slice();
-    newUserProgress[index][field] = value;
-    setUserProgress(newUserProgress);
-  }
-
-  const calculateUserProgressTotal = (yearIndex) => {
-    const userYearData = userProgress[yearIndex];
-    if (!userYearData) {
-      return 0;
-    }
-
-    const startingAmount = parseFormattedNumber(userYearData.startingAmount);
-    const contribution = parseFormattedNumber(userYearData.contribution);
-    const interest = parseFormattedNumber(userYearData.interest);
-
-    return startingAmount + contribution + interest;
-  };
-
 
   const toggleInputs = () => {
     setShowInputs(!showInputs);
@@ -149,7 +102,9 @@ const calculateRetirementPlan = () => {
         </div>
 
         {(showInputs || !enteredValues) && (
-          <div className='inputs'> 
+          <div className='inputs'>
+
+            
             <div>
               <label>Current Assets:</label>
               <input
@@ -213,19 +168,18 @@ const calculateRetirementPlan = () => {
       </div>
 
       <div>
-        <div className='results-container'>
         <h2 className='results-heading'>Results</h2>
         <div className='results-header'>
-          <div className="year">Period</div>
+          <div class="year">Period</div>
           <div>Starting</div>
           <div>Compounding</div>
           <div>Contributions</div>
           <div>End Total</div>
         </div>
-        <div className="results">
+        <div class="results">
           {results.map((result) => (
-            <div className="card" key={result.period}>
-              <div className="year">{result.period}</div>
+            <div class="card" key={result.period}>
+              <div class="year">{result.period}</div>
               <div><span className='dollar-sign'>$</span>{result.startingAmount}</div>
               <div><span className='dollar-sign'>$</span>{result.compoundingAmount}</div>
               <div><span className='dollar-sign'>$</span>{result.contributionAmount}</div>
@@ -233,52 +187,8 @@ const calculateRetirementPlan = () => {
             </div>
           ))}
         </div>
-        </div>
 
-      <div className='progress-container'>
-        <h2>User Progress</h2>
-
-        {userProgress.map((user, index) => (
-          <div key={index}>
-            <h3>{index + 1}</h3>
-            <div>
-              <label>Starting Amount:</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={user.startingAmount}
-                onChange={(e) => handleUserInputChange(index, 'startingAmount', e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Contribution:</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={user.contribution}
-                onChange={(e) => handleUserInputChange(index, 'contribution', e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Interest:</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={user.interest}
-                onChange={(e) => handleUserInputChange(index, 'interest', e.target.value)}
-              />
-            </div>
-            <div>
-              <p>Total: ${calculateUserProgressTotal(index).toFixed(2)}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className='totals-section'>
+        <div className='totals-section'>
           <h2>Totals</h2>
           <p><strong>Final Balance:</strong> ${finalBalance}</p>
           <p><strong>Interest Accrued:</strong> ${compoundInterestAccrued.toFixed(2)}</p>
