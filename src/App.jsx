@@ -173,8 +173,8 @@ const RetirementPlanner = () => {
         <h2 className='results-heading'>Results</h2>
         <div className='results-header'>
           <div className="year">Period</div>
-          <div>Starting</div>
-          <div>Compounding</div>
+          <div>Start</div>
+          <div>Compound</div>
           <div>Contributions</div>
           <div>End Total</div>
         </div>
