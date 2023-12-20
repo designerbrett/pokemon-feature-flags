@@ -186,7 +186,7 @@ const RetirementPlanner = () => {
         </div>
 
         <div className='totals-section'>
-          <h2>Totals</h2>
+          
           <p><strong>Final Balance:</strong> ${finalBalance}</p>
           <p><strong>Interest Accrued:</strong> ${compoundInterestAccrued.toFixed(2)}</p>
           <p><strong>Total Contributions:</strong> ${totalContributions}</p>
