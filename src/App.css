@@ -79,6 +79,11 @@ h2 {
   display: flex;
   justify-content: space-between;
 }
+@media (max-width:480px)  {
+  .results-header {
+    font-size: .75rem;
+  }
+}
 .results-header div {
   text-align: right;
 }
@@ -99,7 +104,7 @@ h2 {
   display: flex;
   justify-content: space-between;
 }
-only screen and (min-width: 480px) {
+@media (max-width:480px)  {
   .results .card {
     font-size: .75rem;
   }
@@ -113,6 +118,11 @@ only screen and (min-width: 480px) {
 .results .dollar-sign {
   font-size: 1rem;
   color: #555;
+}
+@media (max-width:480px)  {
+  .results .dollar-sign {
+    font-size: 0.5rem;
+  }
 }
 .totals-section {
   /*position: fixed;
