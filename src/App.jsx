@@ -117,6 +117,11 @@ const RetirementPlanner = () => {
   const finalBalance = results.length > 0 ? parseFormattedNumber(results[results.length - 1].total) : 0;
   const compoundInterestAccrued = results.length > 0 ? finalBalance - parseFormattedNumber(results[0].startingAmount) - parseFormattedNumber(totalContributions) : 0;
 
+  const getTotalWithCommas = (property) => {
+    const total = getTotal(property);
+    return formatNumberWithCommas(total);
+  };
+
   return (
     <div>
       <h1>Savings Planner</h1>
@@ -221,12 +226,11 @@ const RetirementPlanner = () => {
         </div>
 
         <div className='totals-section'>
-
-          <p><strong>Final Balance:</strong> ${finalBalance}</p>
-          <p><strong>Interest Accrued:</strong> ${compoundInterestAccrued.toFixed(2)}</p>
-          <p><strong>Total Contributions:</strong> ${totalContributions}</p>
+          <p><strong>Final Balance:</strong> ${formatNumberWithCommas(finalBalance)}</p>
+          <p><strong>Interest Accrued:</strong> ${formatNumberWithCommas(compoundInterestAccrued.toFixed(2))}</p>
+          <p><strong>Total Contributions:</strong> ${formatNumberWithCommas(totalContributions)}</p>
           <p><strong>Return:</strong> {(((finalBalance - parseFormattedNumber(totalContributions)) - parseFormattedNumber(results[0]?.startingAmount)) / parseFormattedNumber(results[0]?.startingAmount) * 100).toFixed(2)}%</p>
-        </div>
+      </div>
       </div>
     </div>
   );
