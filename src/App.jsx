@@ -195,7 +195,8 @@ const RetirementPlanner = () => {
           <p><strong>Final Balance:</strong> ${finalBalance}</p>
           <p><strong>Interest Accrued:</strong> ${compoundInterestAccrued.toFixed(2)}</p>
           <p><strong>Total Contributions:</strong> ${totalContributions}</p>
-          <p><strong>Return:</strong> {(((finalBalance - parseFormattedNumber(totalContributions)) - parseFormattedNumber(results[0].startingAmount)) / parseFormattedNumber(results[0].startingAmount) * 100).toFixed(2)}%</p>
+          <p><strong>Return:</strong> {results.length > 0 ? (((finalBalance - parseFormattedNumber(totalContributions)) - parseFormattedNumber(results[0].startingAmount)) / parseFormattedNumber(results[0].startingAmount) * 100).toFixed(2) : '0.00'}%</p>
+
         </div>
       </div>
     </div>
