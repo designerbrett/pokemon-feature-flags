@@ -185,6 +185,7 @@ h2 {
   display: flex;
   justify-content: space-between;
   gap: 16px;
+  overflow-y: scroll;
 }
 @media (max-width:480px)  {
   .totals-section {
