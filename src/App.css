@@ -92,6 +92,11 @@ h2 {
   background: transparent;
   font-family: 'VarelaRoundRegular', sans-serif;
 }
+.numeric-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
 .results-heading {
   margin-bottom: 16px;
