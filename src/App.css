@@ -98,6 +98,11 @@ h2 {
   gap: 4px;
 }
 
+
+.results-container {
+  width: 100%;
+  overflow-y: scroll;
+}
 .results-heading {
   margin-bottom: 16px;
   margin-top: 8px;
@@ -108,9 +113,6 @@ h2 {
   font-size: 1rem;
   font-weight: bold;
   color: #555;
-  position: sticky;
-  top: 43px;
-  z-index: 1;
   background-color: #FFF;
   padding: 8px 0;
   display: flex;

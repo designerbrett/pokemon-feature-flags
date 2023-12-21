@@ -249,6 +249,7 @@ const RetirementPlanner = ({ user }) => {
             handleOptionToggle={handleOptionToggle}
           />
         </div>
+        <div className='results-container'>
         <div className='results-header'>
           {visibleOptions.period && <div className="year">Period</div>}
           {visibleOptions.starting && <div>Start</div>}
@@ -266,6 +267,7 @@ const RetirementPlanner = ({ user }) => {
               {visibleOptions.total && <div><span className='dollar-sign'>$</span>{result.total}</div>}
             </div>
           ))}
+          </div>
         </div>
 
         <div className='totals-section'>
