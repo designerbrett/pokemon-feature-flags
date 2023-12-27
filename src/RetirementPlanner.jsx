@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import OptionsModal from './components/OptionsModal';
-import { auth } from './components/firebase';
+import { auth, database } from './firebase';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
+import { savePlan, getPlans } from './components/firebaseFunctions';
 
 const formatNumberWithCommas = (number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -16,7 +17,9 @@ const parseFormattedNumber = (formattedNumber) => {
   return parseFloat((formattedNumber || '').replace(/,/g, '')) || 0;
 };
 
-const RetirementPlanner = ({ user }) => {
+const RetirementPlanner = ({ user, params = {} }) => {
+  const [planName, setPlanName] = useState('');
+  const { planName: urlPlanName } = params;
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
   const [estimatedReturn, setEstimatedReturn] = useState(localStorage.getItem('estimatedReturn') || '');
@@ -31,6 +34,73 @@ const RetirementPlanner = ({ user }) => {
     contributionAmount: '',
     compoundingFrequency: 'yearly',
   });
+
+  const [planNameState, setPlanNameState] = useState('');
+  const [savedPlans, setSavedPlans] = useState([]);
+  const [planNames, setPlanNames] = useState([]);
+
+  const handleSavePlan = () => {
+    if (planNameState.trim() === '') { // Fix here
+      alert('Please enter a name for your plan.');
+      return;
+    }
+  
+    const planData = {
+      currentAssets,
+      yearsTillRetirement,
+      estimatedReturn,
+      contributionAmount,
+      compoundingFrequency,
+      results,
+    };
+  
+    // Save the plan using the firebaseFunctions.js function
+    savePlan(user.uid, planName, planData)
+    .then((planId) => {
+      // Optionally handle the planId if needed
+      console.log('Plan saved successfully with ID:', planId);
+
+      // Fetch updated plan names after saving a plan
+      getPlans(user.uid)
+        .then((plans) => {
+          const names = plans.map((plan) => plan.name);
+          setPlanNames(names);
+        })
+        .catch((error) => console.error('Error fetching plan names:', error));
+    })
+    .catch((error) => {
+      console.error('Error saving plan:', error);
+    });
+
+  // Clear the planName input
+  setPlanName('');
+};
+
+useEffect(() => {
+  if (urlPlanName && user) {
+    // Fetch the plan data using the firebaseFunctions.js function
+    // Replace the following code with your logic to fetch plan data based on urlPlanName and user.uid
+    database
+      .ref(`users/${user.uid}/plans/${urlPlanName}`)
+      .once('value')
+      .then((snapshot) => {
+        const planData = snapshot.val();
+
+        if (planData) {
+          // Update state with the fetched plan data
+          setCurrentAssets(planData.currentAssets || '');
+          setYearsTillRetirement(planData.yearsTillRetirement || '');
+          setEstimatedReturn(planData.estimatedReturn || '');
+          setContributionAmount(planData.contributionAmount || '');
+          setCompoundingFrequency(planData.compoundingFrequency || 'yearly');
+          setPlanNameState(urlPlanName); // Set the planNameState
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching plan data:', error);
+      });
+  }
+}, [user, urlPlanName]);
 
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
 
@@ -55,11 +125,11 @@ const RetirementPlanner = ({ user }) => {
       compoundingFrequency,
     });
 
-    localStorage.setItem('currentAssets', currentAssets);
-    localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
-    localStorage.setItem('estimatedReturn', estimatedReturn);
-    localStorage.setItem('contributionAmount', contributionAmount);
-    localStorage.setItem('compoundingFrequency', compoundingFrequency);
+    //localStorage.setItem('currentAssets', currentAssets);
+    //localStorage.setItem('yearsTillRetirement', yearsTillRetirement);
+    //localStorage.setItem('estimatedReturn', estimatedReturn);
+    //localStorage.setItem('contributionAmount', contributionAmount);
+    //localStorage.setItem('compoundingFrequency', compoundingFrequency);
 
     calculateRetirementPlan();
   }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency, visibleOptions]);
@@ -120,11 +190,6 @@ const RetirementPlanner = ({ user }) => {
     setReturnPercentage(returnPercentage);
   };
   
-  
-  
-  
-  
-
   const handleReset = () => {
     setCurrentAssets('');
     setYearsTillRetirement('');
@@ -225,6 +290,17 @@ const RetirementPlanner = ({ user }) => {
             </div>
             <div>
               <button onClick={handleReset}>Reset</button>
+            </div>
+
+            <div className='save-plan-section'>
+              <label>Save Plan:</label>
+              <input
+                type="text"
+                value={planName}
+                placeholder="Enter plan name"
+                onChange={(e) => setPlanName(e.target.value)}
+              />
+              <button onClick={handleSavePlan}>Save</button>
             </div>
           </div>
         )}

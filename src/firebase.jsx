@@ -1,7 +1,7 @@
 // firebase.js
-import { initializeApp } from 'firebase/compat/app';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider } from 'firebase/compat/auth';
-import { getDatabase } from 'firebase/compat/firestore';
+import { initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
+import { getDatabase, ref, push, child, get } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: "AIzaSyByeY2xsTIp9elKp3pG6Hdta0fc0w63sPY",
@@ -11,16 +11,18 @@ const firebaseConfig = {
   storageBucket: "savings-forecast-dc11a.appspot.com",
   messagingSenderId: "332607005950",
   appId: "1:332607005950:web:0285fa652d93647a74f1af",
-  measurementId: "G-7G8F1QSDBM"
-}
+  measurementId: "G-7G8F1QSDBM",
+};
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
-const database = getDatabase(firebaseApp); // Fix the variable name here
+const database = getDatabase(firebaseApp);
+const db = {
+  ref,
+  get,
+};
 
 const googleProvider = new GoogleAuthProvider();
-
-export { auth, googleProvider, database };
 
 // Set up onAuthStateChanged listener
 export const onAuthStateChange = (callback) => {
@@ -28,3 +30,5 @@ export const onAuthStateChange = (callback) => {
     callback(user);
   });
 };
+
+export { auth, googleProvider, database, firebaseApp, db };
