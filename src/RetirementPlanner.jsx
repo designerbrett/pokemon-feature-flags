@@ -39,8 +39,10 @@ const RetirementPlanner = ({ user, params = {} }) => {
   const [savedPlans, setSavedPlans] = useState([]);
   const [planNames, setPlanNames] = useState([]);
 
-  const handleSavePlan = () => {
-    if (planNameState.trim() === '') { // Fix here
+  const handleSavePlan = async () => {
+    console.log('Plan Name:', planName);
+  
+    if (planName.trim() === '') {
       alert('Please enter a name for your plan.');
       return;
     }
@@ -55,26 +57,24 @@ const RetirementPlanner = ({ user, params = {} }) => {
     };
   
     // Save the plan using the firebaseFunctions.js function
-    savePlan(user.uid, planName, planData)
-    .then((planId) => {
+    try {
+      const planId = await savePlan(user.uid, planName, planData);
+  
       // Optionally handle the planId if needed
       console.log('Plan saved successfully with ID:', planId);
-
+  
       // Fetch updated plan names after saving a plan
-      getPlans(user.uid)
-        .then((plans) => {
-          const names = plans.map((plan) => plan.name);
-          setPlanNames(names);
-        })
-        .catch((error) => console.error('Error fetching plan names:', error));
-    })
-    .catch((error) => {
+      const plans = await getPlans(user.uid);
+      const names = plans.map((plan) => plan.name);
+      setPlanNames(names);
+  
+      // Clear the planName input
+      setPlanName('');
+  
+    } catch (error) {
       console.error('Error saving plan:', error);
-    });
-
-  // Clear the planName input
-  setPlanName('');
-};
+    }
+  };
 
 useEffect(() => {
   if (urlPlanName && user) {
