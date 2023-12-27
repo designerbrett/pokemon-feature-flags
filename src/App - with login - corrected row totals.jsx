@@ -22,7 +22,7 @@ const App = () => {
   return (
     <Router>
       <div>
-        <h1><Link to="/">WealthDoodle</Link></h1>
+        <h1><Link to="/">Savings Planner</Link></h1>
         {!user ? (
           <div>
             <Link to="/signup">Sign Up</Link>

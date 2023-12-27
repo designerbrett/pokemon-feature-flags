@@ -1,6 +1,7 @@
 // UserAccount.jsx
 import React, { useState } from 'react';
 
+
 const UserAccount = ({ user }) => {
   const [totalAssets, setTotalAssets] = useState('');
 
@@ -19,8 +20,21 @@ const UserAccount = ({ user }) => {
       <h2>User Account</h2>
       {user ? (
         <div>
-          <p>Email: {user.email}</p>
-          <div>
+          <div className='user-info-display-section'>
+            <p>Email: {user.email}</p>
+          </div>
+
+          <div className='user-assets'>
+            <label>Total Assets:</label>
+            <input
+              type="text"
+              value={totalAssets}
+              onChange={handleTotalAssetsChange}
+            />
+            <button onClick={saveTotalAssets}>Save Total Assets</button>
+          </div>
+
+          <div className='user-assets'>
             <label>Total Assets:</label>
             <input
               type="text"
