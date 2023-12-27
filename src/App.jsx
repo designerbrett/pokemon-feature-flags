@@ -1,34 +1,33 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Header from './components/Header';
 import RetirementPlanner from './RetirementPlanner';
+import PlanDetail from './PlanDetail';
 import UserAccount from './UserAccount';
 import { onAuthStateChange } from './components/firebase';
 import { auth } from './components/firebase';
 import { getPlans } from './components/firebaseFunctions';
 
-
 const App = () => {
   const [user, setUser] = useState(null);
-  const [planNames, setPlanNames] = useState([]);
+  const [plans, setPlans] = useState([]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         setUser(authUser);
 
-        // Fetch plan names when the user is authenticated
+        // Fetch plans (including IDs) when the user is authenticated
         getPlans(authUser.uid)
           .then((plans) => {
-            const names = plans.map((plan) => plan.name);
-            setPlanNames(names);
+            setPlans(plans);
           })
-          .catch((error) => console.error('Error fetching plan names:', error));
+          .catch((error) => console.error('Error fetching plans:', error));
       } else {
         setUser(null);
-        setPlanNames([]); // Clear plan names when the user is not authenticated
+        setPlans([]); // Clear plans when the user is not authenticated
       }
     });
 
@@ -37,24 +36,28 @@ const App = () => {
     };
   }, []);
 
-  const handlePlanSelection = (selectedPlan) => {
-    // Navigate to the Retirement Planner with the selected plan
-    window.location.href = `/retirement-planner/${encodeURIComponent(selectedPlan)}`;
+  const handlePlanSelection = (selectedPlanId) => {
+    // Use the plan ID directly for navigation
+    window.location.href = `/d/${encodeURIComponent(selectedPlanId)}`;
   };
 
   return (
     <Router>
       <div>
         <div>
-        <ul>
-              {planNames.map((planName) => (
-                <li key={planName} onClick={() => handlePlanSelection(planName)}>
-                  {planName}
-                </li>
-              ))}
-            </ul>
-      </div>
-        <h1><Link to="/">WealthDoodle</Link></h1>
+          <ul>
+            {plans.map((plan) => (
+              <li key={plan.id}>
+                <Link to={`/d/${encodeURIComponent(plan.id)}`} onClick={() => handlePlanSelection(plan.id)}>
+                  {plan.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <h1>
+          <Link to="/">WealthDoodle</Link>
+        </h1>
         {!user ? (
           <div>
             <Link to="/signup">Sign Up</Link>
@@ -62,7 +65,9 @@ const App = () => {
           </div>
         ) : (
           <div>
-            <p>Welcome, <Link to="/user-account">{user.email}</Link></p>
+            <p>
+              Welcome, <Link to="/user-account">{user.email}</Link>
+            </p>
             <button onClick={() => auth.signOut()}>Sign Out</button>
           </div>
         )}
@@ -70,10 +75,11 @@ const App = () => {
         <Routes>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/retirement-planner" element={<RetirementPlanner user={user} />} />
           <Route path="/user-account" element={<UserAccount user={user} />} />
-          <Route path="*" element={<Home user={user} />} /> {/* Change the route path to "*" */}
-          <Route path="/retirement-planner/:planName" element={<RetirementPlanner user={user} />} />
+          <Route path="/retirement-planner" element={<RetirementPlanner user={user} />} />
+          <Route path="/retirement-planner/:planId" element={<RetirementPlanner user={user} />} />
+          <Route path="/plan/:planId" element={<PlanDetail />} />
+          <Route path="*" element={<Home user={user} />} />
           {/* Add other routes as needed */}
         </Routes>
       </div>

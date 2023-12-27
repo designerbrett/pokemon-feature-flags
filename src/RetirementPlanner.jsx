@@ -46,6 +46,8 @@ const RetirementPlanner = ({ user, params = {} }) => {
       alert('Please enter a name for your plan.');
       return;
     }
+
+    const planId = planName;
   
     const planData = {
       currentAssets,
@@ -58,19 +60,19 @@ const RetirementPlanner = ({ user, params = {} }) => {
   
     // Save the plan using the firebaseFunctions.js function
     try {
-      const planId = await savePlan(user.uid, planName, planData);
-  
+      await savePlan(user.uid, planId, planData);
+
       // Optionally handle the planId if needed
       console.log('Plan saved successfully with ID:', planId);
-  
+
       // Fetch updated plan names after saving a plan
       const plans = await getPlans(user.uid);
       const names = plans.map((plan) => plan.name);
       setPlanNames(names);
-  
+
       // Clear the planName input
       setPlanName('');
-  
+
     } catch (error) {
       console.error('Error saving plan:', error);
     }
