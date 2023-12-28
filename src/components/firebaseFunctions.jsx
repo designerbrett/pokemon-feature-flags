@@ -1,5 +1,5 @@
 // firebaseFunctions.jsx
-import { getDatabase, ref, push, set, child, get, update } from 'firebase/database';
+import { getDatabase, ref, push, set, child, get, update, serverTimestamp, remove } from 'firebase/database';
 
 export const saveTotalAssets = (userId, totalAssets) => {
   const db = getDatabase();
@@ -24,7 +24,9 @@ export const savePlan = (userId, planName, planData) => {
   const userPlansRef = ref(db, `users/${userId}/plans`);
   const newPlanRef = push(userPlansRef);
 
-  return set(newPlanRef, { name: planName, data: planData })
+  const timestamp = new Date().toISOString();
+
+  return set(newPlanRef, { name: planName, data: planData, timestamp })
     .then(() => newPlanRef.key)
     .catch((error) => {
       console.error('Error saving plan:', error);
@@ -46,6 +48,18 @@ export const getPlans = (userId) => {
     })
     .catch((error) => {
       console.error('Error fetching plans:', error);
+      throw error;
+    });
+};
+
+export const deletePlan = (userId, planId) => {
+  const db = getDatabase();
+  const userPlansRef = ref(db, `users/${userId}/plans/${planId}`);
+
+  return remove(userPlansRef)
+    .then(() => console.log('Plan deleted successfully'))
+    .catch((error) => {
+      console.error('Error deleting plan:', error);
       throw error;
     });
 };

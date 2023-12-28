@@ -31,6 +31,9 @@ button.close-button {
   padding: 8px;
   line-height: 1.25rem;
 }
+button.btn-no-bg {
+  background-color: transparent;
+}
 input {
   border: 1px solid rgb(209 213 219);
   padding: 8px;
@@ -50,6 +53,8 @@ h1 {
   z-index: 1;
   background-color: #FFF;
   padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
 }
 h2 {
   font-size: 1.25rem;
@@ -220,26 +225,46 @@ h2 {
   top: 0;
   left: 0;
   background-color: #111;
-  overflow-x: hidden;
+  overflow-x: scroll;
   transition: 0.5s;
-  padding-top: 60px;
+  color: #818181;
+  font-size: 14px;
 }
 .doodles-menu.visible {
   width: 250px;
   z-index: 3;
 }
+.doodles-menu ul {
+  padding: 16px;
+  margin-top: 16px;
+}
+.doodles-menu li {
+  list-style: none;
+  padding: 8px 24px 8px 8px;
+  border-radius: 4px;
+  position: relative;
+}
+.doodles-menu li:hover {
+  background-color: #202123;
+  cursor: pointer;
+}
+.doodles-menu li button {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  color: #777;
+  display: none;
+}
+.doodles-menu li:hover button {
+  display: block;
+} 
 
 .doodles-menu a {
-  padding: 16px;
   text-decoration: none;
-  font-size: 18px;
-  color: #818181;
+  font-size: 16px;
+  color: #FFF;
   display: block;
   transition: 0.3s;
-}
-
-.doodles-menu a:hover {
-  color: #f1f1f1;
 }
 
 .doodles-menu .closebtn {

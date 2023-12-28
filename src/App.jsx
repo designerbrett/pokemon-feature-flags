@@ -9,7 +9,7 @@ import PlanDetail from './PlanDetail';
 import UserAccount from './UserAccount';
 import { onAuthStateChange } from './components/firebase';
 import { auth } from './components/firebase';
-import { getPlans } from './components/firebaseFunctions';
+import { getPlans, deletePlan } from './components/firebaseFunctions';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -47,13 +47,23 @@ const App = () => {
     navigate(`/plan/${encodeURIComponent(selectedPlanId)}`);
   };
 
+  const handleDeletePlan = async (planId) => {
+    if (window.confirm('Are you sure you want to delete this plan?')) {
+      try {
+        await deletePlan(user.uid, planId);
+        // After deleting the plan, update the list of plans
+        const updatedPlans = await getPlans(user.uid);
+        setPlans(updatedPlans);
+      } catch (error) {
+        console.error('Error deleting plan:', error);
+      }
+    }
+  };
+
   return (
     <Router>
       <div>
-        {/* Hamburger Menu Button */}
-        <button className="hamburger-menu" onClick={toggleMenu}>
-          ☰
-        </button>
+        
 
         {/* Slide-in Menu */}
         <div id="doodleNav" className={`doodles-menu ${menuVisible ? 'visible' : ''}`}>
@@ -63,18 +73,16 @@ const App = () => {
           <ul>
             {plans.map((plan) => (
               <li key={plan.id}>
-                
                 <Link to={`/plan/${encodeURIComponent(plan.id)}`} onClick={() => handlePlanSelection(plan.id)}>
                   {plan.name}
                 </Link>
+                <p className='menu-timestamp'>{plan.timestamp ? new Date(plan.timestamp).toLocaleString() : ''}</p>
+                <button className='btn-no-bg' onClick={() => handleDeletePlan(plan.id)}><i class="fa fa-trash-o"></i></button>
               </li>
             ))}
           </ul>
-        </div>
-        <h1>
-          <Link to="/">WealthDoodle</Link>
-        </h1>
-        {!user ? (
+
+          {!user ? (
           <div>
             <Link to="/signup">Sign Up</Link>
             <Link to="/signin">Sign In</Link>
@@ -87,6 +95,16 @@ const App = () => {
             <button onClick={() => auth.signOut()}>Sign Out</button>
           </div>
         )}
+        </div>
+        <h1>
+          {/* Hamburger Menu Button */}
+        <button className="hamburger-menu" onClick={toggleMenu}>
+          ☰
+        </button>
+          <Link to="/">WealthDoodle</Link>
+          <div></div>
+        </h1>
+        
 
         <Routes>
           <Route path="/signup" element={<SignUp />} />

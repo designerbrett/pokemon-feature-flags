@@ -4,7 +4,7 @@ import OptionsModal from './components/OptionsModal';
 import { auth, database } from './firebase';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
-import { savePlan, getPlans } from './components/firebaseFunctions';
+import { savePlan, getPlans, deletePlan } from './components/firebaseFunctions';
 
 const formatNumberWithCommas = (number) => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -56,6 +56,7 @@ const RetirementPlanner = ({ user, params = {} }) => {
       contributionAmount,
       compoundingFrequency,
       results,
+      timestamp: new Date().toISOString(),
     };
   
     // Save the plan using the firebaseFunctions.js function
@@ -75,6 +76,19 @@ const RetirementPlanner = ({ user, params = {} }) => {
 
     } catch (error) {
       console.error('Error saving plan:', error);
+    }
+  };
+
+  const handleDeletePlan = async (planId) => {
+    if (window.confirm('Are you sure you want to delete this plan?')) {
+      try {
+        await deletePlan(user.uid, planId);
+        // After deleting the plan, you might want to update the list of plans
+        const updatedPlans = await getPlans(user.uid);
+        setPlans(updatedPlans);
+      } catch (error) {
+        console.error('Error deleting plan:', error);
+      }
     }
   };
 
