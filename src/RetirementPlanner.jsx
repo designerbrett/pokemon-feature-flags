@@ -297,13 +297,13 @@ useEffect(() => {
                 onChange={(e) => setContributionAmount(e.target.value.replace('$', ''))}
               />
             </div>
-            <div>
+            {/* <div>
               <label>Compounding Frequency:</label>
               <select value={compoundingFrequency} onChange={(e) => setCompoundingFrequency(e.target.value)}>
                 <option value="yearly">Yearly</option>
                 <option value="monthly">Monthly</option>
               </select>
-            </div>
+        </div> */}
             <div>
               <button onClick={handleReset}>Reset</button>
             </div>
