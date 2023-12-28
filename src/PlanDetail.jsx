@@ -32,6 +32,7 @@ const PlanDetail = ({ user, planId }) => {
   if (!planDetails) {
     return <div>Loading...</div>;
   }
+  const decodedPlanId = decodeURIComponent(params.planId)
 
   return (
     <div>

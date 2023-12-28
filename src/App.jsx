@@ -77,7 +77,7 @@ const App = () => {
                   {plan.name}
                 </Link>
                 <p className='menu-timestamp'>{plan.timestamp ? new Date(plan.timestamp).toLocaleString() : ''}</p>
-                <button className='btn-no-bg' onClick={() => handleDeletePlan(plan.id)}><i class="fa fa-trash-o"></i></button>
+                <button className='btn-no-bg' onClick={() => handleDeletePlan(plan.id)}><i className='fa fa-trash-o'></i></button>
               </li>
             ))}
           </ul>
