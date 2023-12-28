@@ -1,18 +1,18 @@
-// PlanDetail.jsx
+// PlanDetail.js
 import React, { useState, useEffect } from 'react';
-import { db } from './firebase';  // Update the import statement
-import { useParams } from 'react-router-dom';
+import { database } from './firebase';
 
-const PlanDetail = ({ user }) => {
+const PlanDetail = ({ user, planId }) => {
   const [planDetails, setPlanDetails] = useState(null);
-  const [editMode, setEditMode] = useState(false);
-  const { planId } = useParams();
 
   useEffect(() => {
     const fetchPlanDetails = async () => {
       try {
-        const snapshot = await db.get(db.ref(`users/${user.uid}/plans/${planId}`));
+        console.log('Fetching plan details...');
+        const snapshot = await database.ref(`users/${user.uid}/plans/${planId}`).once('value');
         const data = snapshot.val();
+
+        console.log('Plan details:', data);
 
         if (data) {
           setPlanDetails(data);
@@ -29,18 +29,6 @@ const PlanDetail = ({ user }) => {
     }
   }, [user, planId]);
 
-  const toggleEditMode = () => {
-    setEditMode(!editMode);
-  };
-
-  const handleInputChange = (field, value) => {
-    // Update the local state when the user changes an input field
-    setPlanDetails((prevDetails) => ({
-      ...prevDetails,
-      [field]: value,
-    }));
-  };
-
   if (!planDetails) {
     return <div>Loading...</div>;
   }
@@ -48,52 +36,11 @@ const PlanDetail = ({ user }) => {
   return (
     <div>
       <h2>Plan Details - {planDetails.name}</h2>
-      {editMode ? (
-        <div>
-          <div>
-            <label>Current Assets:</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={planDetails.currentAssets}
-              onChange={(e) => handleInputChange('currentAssets', e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Years to Save:</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={planDetails.yearsTillRetirement}
-              onChange={(e) => handleInputChange('yearsTillRetirement', e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Estimated Return (%):</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={planDetails.estimatedReturn}
-              onChange={(e) => handleInputChange('estimatedReturn', e.target.value)}
-            />
-          </div>
-          {/* Add more input fields based on your plan structure */}
-        </div>
-      ) : (
-        <div>
-          <p><strong>Current Assets:</strong> {planDetails.currentAssets}</p>
-          <p><strong>Years to Save:</strong> {planDetails.yearsTillRetirement}</p>
-          <p><strong>Estimated Return (%):</strong> {planDetails.estimatedReturn}</p>
-          {/* Add more details based on your plan structure */}
-        </div>
-      )}
-
-      <div>
-        <button onClick={toggleEditMode}>{editMode ? 'Save Changes' : 'Edit Plan'}</button>
-      </div>
+      {/* Render plan details using planDetails object */}
+      <p><strong>Current Assets:</strong> {planDetails.currentAssets}</p>
+      <p><strong>Years to Save:</strong> {planDetails.yearsTillRetirement}</p>
+      <p><strong>Estimated Return (%):</strong> {planDetails.estimatedReturn}</p>
+      {/* Add more details based on your plan structure */}
     </div>
   );
 };

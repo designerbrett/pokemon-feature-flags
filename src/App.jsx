@@ -42,6 +42,11 @@ const App = () => {
     setMenuVisible(!menuVisible);
   };
 
+  const handlePlanSelection = (selectedPlanId) => {
+    // Use the plan ID directly for navigation
+    navigate(`/plan/${encodeURIComponent(selectedPlanId)}`);
+  };
+
   return (
     <Router>
       <div>
