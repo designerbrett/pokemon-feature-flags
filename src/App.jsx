@@ -1,5 +1,6 @@
+// App.jsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Header from './components/Header';
@@ -13,6 +14,7 @@ import { getPlans } from './components/firebaseFunctions';
 const App = () => {
   const [user, setUser] = useState(null);
   const [plans, setPlans] = useState([]);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
@@ -36,19 +38,28 @@ const App = () => {
     };
   }, []);
 
-  const handlePlanSelection = (selectedPlanId) => {
-    // Use the plan ID directly for navigation
-    window.location.href = `/d/${encodeURIComponent(selectedPlanId)}`;
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
   };
 
   return (
     <Router>
       <div>
-        <div>
+        {/* Hamburger Menu Button */}
+        <button className="hamburger-menu" onClick={toggleMenu}>
+          ☰
+        </button>
+
+        {/* Slide-in Menu */}
+        <div id="doodleNav" className={`doodles-menu ${menuVisible ? 'visible' : ''}`}>
+        <button className="close-btn" onClick={() => setMenuVisible(false)}>
+            &times;
+          </button>
           <ul>
             {plans.map((plan) => (
               <li key={plan.id}>
-                <Link to={`/d/${encodeURIComponent(plan.id)}`} onClick={() => handlePlanSelection(plan.id)}>
+                
+                <Link to={`/plan/${encodeURIComponent(plan.id)}`} onClick={() => handlePlanSelection(plan.id)}>
                   {plan.name}
                 </Link>
               </li>
@@ -78,7 +89,8 @@ const App = () => {
           <Route path="/user-account" element={<UserAccount user={user} />} />
           <Route path="/retirement-planner" element={<RetirementPlanner user={user} />} />
           <Route path="/retirement-planner/:planId" element={<RetirementPlanner user={user} />} />
-          <Route path="/plan/:planId" element={<PlanDetail />} />
+          <Route path="/plan/:planId" element={<PlanDetail user={user} />}
+/>
           <Route path="*" element={<Home user={user} />} />
           {/* Add other routes as needed */}
         </Routes>
