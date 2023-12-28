@@ -1,16 +1,17 @@
+// PlanDetail.jsx
 import React, { useState, useEffect } from 'react';
-import { database } from './firebase';
-import { useParams } from 'react-router-dom';  // Import useParams
+import { db } from './firebase';  // Update the import statement
+import { useParams } from 'react-router-dom';
 
 const PlanDetail = ({ user }) => {
   const [planDetails, setPlanDetails] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const { planId } = useParams();  // Use useParams to access route parameters
+  const { planId } = useParams();
 
   useEffect(() => {
     const fetchPlanDetails = async () => {
       try {
-        const snapshot = await database.ref(`users/${user.uid}/plans/${planId}`).once('value');
+        const snapshot = await db.get(db.ref(`users/${user.uid}/plans/${planId}`));
         const data = snapshot.val();
 
         if (data) {
