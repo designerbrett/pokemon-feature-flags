@@ -1,7 +1,7 @@
 // firebase.js
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
-import { getDatabase, ref, push, child, get } from 'firebase/database';
+import { getDatabase, ref, push, child, get, onValue } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: "AIzaSyByeY2xsTIp9elKp3pG6Hdta0fc0w63sPY",
@@ -31,4 +31,4 @@ export const onAuthStateChange = (callback) => {
   });
 };
 
-export { auth, googleProvider, database, firebaseApp, db };
+export { auth, googleProvider, database, firebaseApp, db, onValue };
