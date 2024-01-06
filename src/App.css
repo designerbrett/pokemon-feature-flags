@@ -34,6 +34,10 @@ button.close-button {
 button.btn-no-bg {
   background-color: transparent;
 }
+button:disabled {
+  background-color: rgb(231 231 231);
+  color: rgb(16 16 16 / 32%);
+}
 input {
   border: 1px solid rgb(209 213 219);
   padding: 8px;
