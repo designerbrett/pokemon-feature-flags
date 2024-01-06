@@ -21,17 +21,6 @@ const PlanDetail = ({ user }) => {
             setPlanDetails(data)
           }
         })
-        // const snapshot = db.ref(database, `users/${user.uid}/plans/${planId}`);
-        // console.log('snapshot', snapshot)
-        // const data = snapshot.val();
-
-        // console.log('Plan details:', data);
-
-        // if (data) {
-        //   setPlanDetails(data);
-        // } else {
-        //   console.error('Plan not found');
-        // }
       } catch (error) {
         console.error('Error fetching plan details:', error);
       }
@@ -49,11 +38,9 @@ const PlanDetail = ({ user }) => {
   return (
     <div>
       <h2>Plan Details - {planDetails.name}</h2>
-      {/* Render plan details using planDetails object */}
       <p><strong>Current Assets:</strong> {planDetails.data.currentAssets}</p>
       <p><strong>Years to Save:</strong> {planDetails.data.yearsTillRetirement}</p>
       <p><strong>Estimated Return (%):</strong> {planDetails.estimatedReturn}</p>
-      {/* Add more details based on your plan structure */}
     </div>
   );
 };
