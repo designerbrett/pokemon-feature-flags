@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { database, db, onValue, ref, set, update } from './firebase';
 
 const PlanDetail = ({ user }) => {
@@ -112,9 +114,62 @@ const PlanDetail = ({ user }) => {
     }
   };
 
-  const getTotalWithCommas = (property) => {
-    const total = getTotal(property);
-    return formatNumberWithCommas(total);
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
+  const chartOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Stacked Bar Chart',
+      },
+    },
+    responsive: true,
+    scales: {
+      x: {
+        stacked: true,
+        title: {
+          display: true,
+          text: 'Period',
+        },
+      },
+      y: {
+        stacked: true,
+        title: {
+          display: true,
+          text: 'Amount ($)',
+        },
+      },
+    },
+  };
+  
+  const labels = results.map((result) => result.period);
+  
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        label: 'Starting Amount',
+        data: results.map((result) => (result.startingAmount)),
+        backgroundColor: 'rgba(75,192,192,1)',
+      },
+      {
+        label: 'Interest',
+        data: results.map((result) => (result.compoundingAmount)),
+        backgroundColor: 'rgba(255,99,132,1)',
+      },
+      {
+        label: 'Additional Funds',
+        data: results.map((result) => (result.contributionAmount)),
+        backgroundColor: 'rgba(255,205,86,1)',
+      },
+    ],
   };
 
   return (
@@ -186,6 +241,7 @@ const PlanDetail = ({ user }) => {
             <div><span className='dollar-sign'>$</span>{result.total}</div>
           </div>
         ))}
+        <Bar data={chartData} options={chartOptions} />
       </div>
     </div>
   );

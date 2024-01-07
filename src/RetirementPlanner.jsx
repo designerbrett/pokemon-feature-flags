@@ -4,6 +4,8 @@ import OptionsModal from './components/OptionsModal';
 import { auth, database } from './firebase';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { savePlan, getPlans, deletePlan } from './components/firebaseFunctions';
 
 const formatNumberWithCommas = (number) => {
@@ -85,7 +87,7 @@ const RetirementPlanner = ({ user, params = {} }) => {
         await deletePlan(user.uid, planId);
         // After deleting the plan, you might want to update the list of plans
         const updatedPlans = await getPlans(user.uid);
-        setPlans(updatedPlans);
+        setSavedPlans(updatedPlans); // Update the state with the new plans
       } catch (error) {
         console.error('Error deleting plan:', error);
       }
@@ -240,6 +242,64 @@ useEffect(() => {
     return formatNumberWithCommas(total);
   };
 
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
+  const chartOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Stacked Bar Chart',
+      },
+    },
+    responsive: true,
+    scales: {
+      x: {
+        stacked: true,
+        title: {
+          display: true,
+          text: 'Period',
+        },
+      },
+      y: {
+        stacked: true,
+        title: {
+          display: true,
+          text: 'Amount ($)',
+        },
+      },
+    },
+  };
+  
+  const labels = results.map((result) => result.period);
+  
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        label: 'Starting Amount',
+        data: results.map((result) => parseFormattedNumber(result.startingAmount)),
+        backgroundColor: 'rgba(75,192,192,1)',
+      },
+      {
+        label: 'Interest',
+        data: results.map((result) => parseFormattedNumber(result.compoundingAmount)),
+        backgroundColor: 'rgba(255,99,132,1)',
+      },
+      {
+        label: 'Additional Funds',
+        data: results.map((result) => parseFormattedNumber(result.contributionAmount)),
+        backgroundColor: 'rgba(255,205,86,1)',
+      },
+    ],
+  };
+
   return (
     <div>
       <div className='input-container'>
@@ -359,6 +419,7 @@ useEffect(() => {
               {visibleOptions.total && <div><span className='dollar-sign'>$</span>{result.total}</div>}
             </div>
           ))}
+          <Bar data={chartData} options={chartOptions} />
           </div>
         </div>
 
