@@ -10,7 +10,7 @@ import UserAccount from './UserAccount';
 import { onAuthStateChange } from './components/firebase';
 import { auth } from './components/firebase';
 import { getPlans, deletePlan } from './components/firebaseFunctions';
-import logo from './images/wd-logo.png';
+import logo from '/images/wd-logo.png';
 
 console.log(logo);
 
@@ -104,7 +104,7 @@ const App = () => {
         <button className="hamburger-menu" onClick={toggleMenu}>
           ☰
         </button>
-          <Link to="/"><img src={logo} alt="Logo" />;</Link>
+          <Link to="/"><img className='applogo' src={logo} alt="Logo" /></Link>
           <div></div>
         </h1>
         
