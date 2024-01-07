@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { database, db, onValue, ref, set, update } from './firebase';
+import { database, db, onValue, ref, update } from './firebase';
 
 const PlanDetail = ({ user }) => {
   const [planDetails, setPlanDetails] = useState(null);
   const [results, setResults] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [realCompoundValues, setRealCompoundValues] = useState({});
+  const [realContributionsValues, setRealContributionsValues] = useState({});
+  const [chartData, setChartData] = useState(null);
 
   const navigate = useNavigate();
   let { planId } = useParams();
@@ -17,7 +20,7 @@ const PlanDetail = ({ user }) => {
     const fetchPlanDetails = async () => {
       try {
         console.log('Fetching plan details...');
-        const planRef = db.ref(database, `users/${user.uid}/plans/${planId}`);
+        const planRef = ref(database, `users/${user.uid}/plans/${planId}`);
         onValue(planRef, (snapshot) => {
           const data = snapshot.val();
           console.log('data', data);
@@ -42,9 +45,13 @@ const PlanDetail = ({ user }) => {
   }, [planDetails]);
 
   useEffect(() => {
-    // Call calculateRetirementPlan when estimatedReturn changes
     calculateRetirementPlan();
-  }, [planDetails?.data?.estimatedReturn]);
+  }, [planDetails?.data?.estimatedReturn, realContributionsValues]);
+  
+  useEffect(() => {
+    // Update the chart data
+    updateChartData(results, realCompoundValues, realContributionsValues);
+}, [results, realCompoundValues, realContributionsValues]);
 
   const handleChange = (property, value) => {
     setPlanDetails((prevPlanDetails) => ({
@@ -55,7 +62,6 @@ const PlanDetail = ({ user }) => {
       },
     }));
 
-    // Set isDirty to true when a change occurs
     setIsDirty(true);
   };
 
@@ -71,7 +77,6 @@ const PlanDetail = ({ user }) => {
       const yearlyReturn = currentTotal * returnRate;
       const monthlyReturn = yearlyReturn / 12;
 
-      // Calculate the starting amount based on the period
       const startingAmount = index === 0 ? currentTotal : parseFloat(newResults[index - 1].total);
 
       currentTotal = startingAmount + (planDetails?.data?.compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
@@ -88,25 +93,68 @@ const PlanDetail = ({ user }) => {
     }
 
     setResults(newResults);
+
+    // Update the chart data
+    updateChartData(newResults);
+  };
+
+  const updateChartData = (newResults) => {
+    const updatedChartData = {
+      labels: newResults.map((result) => result.period),
+      datasets: [
+        {
+          label: 'Projected Principle',
+          data: newResults.map((result) => parseFloat(result.startingAmount)),
+          backgroundColor: 'rgba(75,192,192,1)',
+          stack: 'Stack 0',
+        },
+        {
+          label: 'Projected Return',
+          data: newResults.map((result) => parseFloat(result.compoundingAmount)),
+          backgroundColor: 'rgba(255,99,132,1)',
+          stack: 'Stack 0',
+        },
+        {
+          label: 'Projected Contributions',
+          data: newResults.map((result) => parseFloat(result.contributionAmount)),
+          backgroundColor: 'rgba(255,205,86,1)',
+          stack: 'Stack 0',
+        },
+        {
+          label: 'Total Projected',
+          data: newResults.map((result) => parseFloat(result.startingAmount)),
+          backgroundColor: 'rgba(0, 255, 0, 1)',
+          stack: 'Stack 1',
+        },
+        {
+          label: 'Real Compound',
+          data: newResults.map((result) => parseFloat(realCompoundValues[result.period] || '0')),
+          backgroundColor: 'rgba(54, 162, 235, 1)',
+          stack: 'Stack 1',
+        },
+        {
+          label: 'Real Contributions',
+          data: newResults.map((result) => parseFloat(realContributionsValues[result.period] || '0')),
+          backgroundColor: 'rgba(255, 159, 64, 1)',
+          stack: 'Stack 1',
+        },
+      ],
+    };
+
+    setChartData(updatedChartData);
   };
 
   const saveChanges = async () => {
     try {
       setSaving(true);
-  
-      // Extracting planId and data from planDetails
+
       const { data, ...rest } = planDetails;
-  
-      // Update the existing plan with the modified details
+
       await update(ref(database, `users/${user.uid}/plans/${planId}/data`), data);
-      // Optionally, you can also update other properties of the plan like name, timestamp, etc.
-  
+
       setSaving(false);
-  
-      // Reset isDirty after saving
       setIsDirty(false);
-  
-      // Use navigate to go back to the plan details page
+
       navigate(`/plan/${planId}`);
     } catch (error) {
       console.error('Error saving changes:', error);
@@ -147,29 +195,6 @@ const PlanDetail = ({ user }) => {
         },
       },
     },
-  };
-  
-  const labels = results.map((result) => result.period);
-  
-  const chartData = {
-    labels,
-    datasets: [
-      {
-        label: 'Starting Amount',
-        data: results.map((result) => (result.startingAmount)),
-        backgroundColor: 'rgba(75,192,192,1)',
-      },
-      {
-        label: 'Interest',
-        data: results.map((result) => (result.compoundingAmount)),
-        backgroundColor: 'rgba(255,99,132,1)',
-      },
-      {
-        label: 'Additional Funds',
-        data: results.map((result) => (result.contributionAmount)),
-        backgroundColor: 'rgba(255,205,86,1)',
-      },
-    ],
   };
 
   return (
@@ -231,18 +256,63 @@ const PlanDetail = ({ user }) => {
         </div>
       </div>
 
-      <div className="results">
-        {results.map((result) => (
-          <div className="card" key={result.period}>
-            <div className="year">{result.period}</div>
-            <div><span className='dollar-sign'>$</span>{result.startingAmount}</div>
-            <div><span className='dollar-sign'>$</span>{result.compoundingAmount}</div>
-            <div><span className='dollar-sign'>$</span>{result.contributionAmount}</div>
-            <div><span className='dollar-sign'>$</span>{result.total}</div>
-          </div>
-        ))}
-        <Bar data={chartData} options={chartOptions} />
+      <div className='results-container'>
+        <table>
+          <thead>
+            <tr>
+              <th className='sticky'>Period</th>
+              <th>Start</th>
+              <th>Projected Compound</th>
+              <th>Projected Contributions</th>
+              <th>Projected End Total</th>
+              <th>Real</th>
+              <th>Updated Start</th>
+              <th>Real Compound</th>
+              <th>Real Contributions</th>
+              <th>Real Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((result) => (
+              <tr key={result.period}>
+                <td className='sticky'>{result.period}</td>
+                <td>${result.startingAmount}</td>
+                <td>${result.compoundingAmount}</td>
+                <td>${result.contributionAmount}</td>
+                <td>${result.total}</td>
+                <td> </td>
+                <td>${result.startingAmount}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={realCompoundValues[result.period] || result.compoundingAmount}
+                    onChange={(e) =>
+                      setRealCompoundValues((prevValues) => ({
+                        ...prevValues,
+                        [result.period]: e.target.value.replace('$', ''),
+                      }))
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    value={realContributionsValues[result.period] || result.contributionAmount}
+                    onChange={(e) =>
+                      setRealContributionsValues((prevValues) => ({
+                        ...prevValues,
+                        [result.period]: e.target.value.replace('$', ''),
+                      }))
+                    }
+                  />
+                </td>
+                <td>${(parseFloat(result.startingAmount) + parseFloat(realCompoundValues[result.period] || '0') + parseFloat(realContributionsValues[result.period] || '0')).toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+      {chartData && <Bar data={chartData} options={chartOptions} />}
     </div>
   );
 };

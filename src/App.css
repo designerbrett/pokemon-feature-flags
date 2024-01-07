@@ -114,7 +114,28 @@ h2 {
 .results-container {
   width: 100%;
   overflow-y: scroll;
+  overflow-x: auto;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Add this CSS for the sticky column */
+.sticky {
+  position: sticky;
+  left: 0;
+  background-color: #f2f2f2;
+  z-index: 1;
+}
+
 .results-heading {
   margin-bottom: 16px;
   margin-top: 8px;

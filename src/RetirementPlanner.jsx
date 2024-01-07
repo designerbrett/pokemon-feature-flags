@@ -293,7 +293,7 @@ useEffect(() => {
         backgroundColor: 'rgba(255,99,132,1)',
       },
       {
-        label: 'Additional Funds',
+        label: 'Contribution',
         data: results.map((result) => parseFormattedNumber(result.contributionAmount)),
         backgroundColor: 'rgba(255,205,86,1)',
       },
@@ -389,7 +389,7 @@ useEffect(() => {
           <p><strong>Frequency:</strong> {compoundingFrequency}</p>
         </div>
       </div>
-
+      <Bar data={chartData} options={chartOptions} />
       <div>
         <h2 className='results-heading'>Results</h2>
         <div className='options-dropdown'>
@@ -402,26 +402,31 @@ useEffect(() => {
           />
         </div>
         <div className='results-container'>
-        <div className='results-header'>
-          {visibleOptions.period && <div className="year">Period</div>}
-          {visibleOptions.starting && <div>Start</div>}
-          {visibleOptions.compounding && <div>Compound</div>}
-          {visibleOptions.contribution && <div>Contributions</div>}
-          {visibleOptions.total && <div>End Total</div>}
-        </div>
-        <div className="results">
-          {results.map((result) => (
-            <div className="card" key={result.period}>
-              {visibleOptions.period && <div className="year">{result.period}</div>}
-              {visibleOptions.starting && <div><span className='dollar-sign'>$</span>{result.startingAmount}</div>}
-              {visibleOptions.compounding && <div><span className='dollar-sign'>$</span>{result.compoundingAmount}</div>}
-              {visibleOptions.contribution && <div><span className='dollar-sign'>$</span>{result.contributionAmount}</div>}
-              {visibleOptions.total && <div><span className='dollar-sign'>$</span>{result.total}</div>}
-            </div>
-          ))}
-          <Bar data={chartData} options={chartOptions} />
-          </div>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th className='sticky'>Period</th>
+              <th>Start</th>
+              <th>Projected Compound</th>
+              <th>Projected Contributions</th>
+              <th>Projected End Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((result) => (
+              <tr key={result.period}>
+                <td className='sticky'>{result.period}</td>
+                <td>${result.startingAmount}</td>
+                <td>${result.compoundingAmount}</td>
+                <td>${result.contributionAmount}</td>
+                <td>${result.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      
 
         <div className='totals-section'>
           <p><strong>Final Balance:</strong> ${formatNumberWithCommas(finalBalance)}</p>
