@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { database, db, onValue, ref, update } from './firebase';
+import { database, onValue, ref, update } from './firebase';
 
 const PlanDetail = ({ user }) => {
   const [planDetails, setPlanDetails] = useState(null);
   const [results, setResults] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [realTotalValues, setRealTotalValues] = useState({});
+  const [realCompoundValues, setRealCompoundValues] = useState({});
   const [realContributionsValues, setRealContributionsValues] = useState({});
+  const [realTotalValues, setRealTotalValues] = useState({});
   const [chartData, setChartData] = useState(null);
 
   const navigate = useNavigate();
@@ -47,19 +48,28 @@ const PlanDetail = ({ user }) => {
   useEffect(() => {
     calculateRetirementPlan();
   }, [planDetails?.data?.estimatedReturn, realContributionsValues]);
-  
+
   useEffect(() => {
     // Update the chart data
-    updateChartData(results, realTotalValues, realContributionsValues);
-}, [results, realTotalValues, realContributionsValues]);
+    updateChartData(results, realCompoundValues, realContributionsValues);
+  }, [results, realCompoundValues, realContributionsValues]);
 
-  const handleChange = (property, value) => {
+  const handleChange = (property, value, period) => {
     setPlanDetails((prevPlanDetails) => ({
       ...prevPlanDetails,
       data: {
         ...prevPlanDetails.data,
         [property]: value,
       },
+    }));
+
+    const startingAmount = parseFloat(results[period - 1]?.startingAmount) || 0;
+    const realCompound = parseFloat(realCompoundValues[period] || '0') || 0;
+    const realContributions = parseFloat(realContributionsValues[period] || '0') || 0;
+
+    setRealTotalValues((prevValues) => ({
+      ...prevValues,
+      [period]: (startingAmount + realCompound + realContributions).toFixed(2),
     }));
 
     setIsDirty(true);
@@ -121,9 +131,21 @@ const PlanDetail = ({ user }) => {
           stack: 'Stack 0',
         },
         {
-          label: 'Total Projected',
-          data: newResults.map((result) => parseFloat(result.startingAmount)),
-          backgroundColor: 'rgba(0, 255, 0, 1)',
+          label: 'Real Total',
+          data: newResults.map((result) => parseFloat(realTotalValues[result.period] || '')),
+          backgroundColor: 'rgba(255, 0, 0, 1)',
+          stack: 'Stack 1',
+        },
+        {
+          label: 'Real Return',
+          data: newResults.map((result) => parseFloat(result.compoundingAmount)),
+          backgroundColor: 'rgba(255,99,132,1)',
+          stack: 'Stack 1',
+        },
+        {
+          label: 'Real Contributions',
+          data: newResults.map((result) => parseFloat(realContributionsValues[result.period] || '')),
+          backgroundColor: 'rgba(255, 159, 64, 1)',
           stack: 'Stack 1',
         },
       ],
@@ -162,7 +184,7 @@ const PlanDetail = ({ user }) => {
   const chartOptions = {
     plugins: {
       title: {
-        display: true,
+        display: false,
         text: 'Stacked Bar Chart',
       },
     },
@@ -197,7 +219,7 @@ const PlanDetail = ({ user }) => {
               inputMode="numeric"
               pattern="[0-9]*"
               value={planDetails?.data?.currentAssets || ''}
-              onChange={(e) => handleChange('currentAssets', e.target.value.replace('$', ''))}
+              onChange={(e) => handleChange('currentAssets', e.target.value.replace('$', ''), 0)}
             />
           </div>
           <div>
@@ -208,10 +230,10 @@ const PlanDetail = ({ user }) => {
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={planDetails?.data?.yearsTillRetirement || ''}
-                onChange={(e) => handleChange('yearsTillRetirement', e.target.value)}
+                onChange={(e) => handleChange('yearsTillRetirement', e.target.value, 0)}
               />
-              <button onClick={() => handleChange('yearsTillRetirement', parseInt(planDetails?.data?.yearsTillRetirement || 0) - 1)}>-</button>
-              <button onClick={() => handleChange('yearsTillRetirement', parseInt(planDetails?.data?.yearsTillRetirement || 0) + 1)}>+</button>
+              <button onClick={() => handleChange('yearsTillRetirement', parseInt(planDetails?.data?.yearsTillRetirement || 0) - 1, 0)}>-</button>
+              <button onClick={() => handleChange('yearsTillRetirement', parseInt(planDetails?.data?.yearsTillRetirement || 0) + 1, 0)}>+</button>
             </div>
           </div>
           <div>
@@ -222,10 +244,10 @@ const PlanDetail = ({ user }) => {
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={planDetails?.data?.estimatedReturn || ''}
-                onChange={(e) => handleChange('estimatedReturn', e.target.value)}
+                onChange={(e) => handleChange('estimatedReturn', e.target.value, 0)}
               />
-              <button onClick={() => handleChange('estimatedReturn', parseInt(planDetails?.data?.estimatedReturn || 0) - 1)}>-</button>
-              <button onClick={() => handleChange('estimatedReturn', parseInt(planDetails?.data?.estimatedReturn || 0) + 1)}>+</button>
+              <button onClick={() => handleChange('estimatedReturn', parseInt(planDetails?.data?.estimatedReturn || 0) - 1, 0)}>-</button>
+              <button onClick={() => handleChange('estimatedReturn', parseInt(planDetails?.data?.estimatedReturn || 0) + 1, 0)}>+</button>
             </div>
           </div>
           <div>
@@ -235,7 +257,7 @@ const PlanDetail = ({ user }) => {
               inputMode="numeric"
               pattern="[0-9]*"
               value={planDetails?.data?.contributionAmount || ''}
-              onChange={(e) => handleChange('contributionAmount', e.target.value.replace('$', ''))}
+              onChange={(e) => handleChange('contributionAmount', e.target.value.replace('$', ''), 0)}
             />
           </div>
           <button onClick={saveChanges} disabled={!isDirty || saving}>
@@ -245,15 +267,19 @@ const PlanDetail = ({ user }) => {
       </div>
 
       <div className='results-container'>
-        <h2>Projected</h2>
         <table>
           <thead>
             <tr>
               <th className='sticky'>Period</th>
               <th>Start</th>
-              <th>Projected Compound</th>
+              <th>Projected Return</th>
               <th>Projected Contributions</th>
               <th>Projected Total</th>
+              <th>Real</th>
+              <th>Start</th>
+              <th>User Adjusted Return</th>
+              <th>User Adjusted Contributions</th>
+              <th>User Adjusted Total</th>
             </tr>
           </thead>
           <tbody>
@@ -264,26 +290,7 @@ const PlanDetail = ({ user }) => {
                 <td>${result.compoundingAmount}</td>
                 <td>${result.contributionAmount}</td>
                 <td>${result.total}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <h2>User Adjusted</h2>
-        <table>
-          <thead>
-            <tr>
-              <th className='sticky'>Period</th>
-              <th>Updated Start</th>
-              <th>Real Compound</th>
-              <th>Real Contributions</th>
-              <th>Real Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((result) => (
-              <tr key={result.period}>
-                <td className='sticky'>{result.period}</td>
+                <td> </td>
                 <td>${result.startingAmount}</td>
                 <td>${result.compoundingAmount}</td>
                 <td>
@@ -301,15 +308,23 @@ const PlanDetail = ({ user }) => {
                 <td>
                   <input
                     type="text"
-                    value={result.total || result.total}
-                    onChange={(e) =>
+                    value={(parseFloat(result.startingAmount) + parseFloat(result.compoundingAmount) + parseFloat(realContributionsValues[result.period] || '0')).toFixed(2)}
+                    onChange={(e) => {
+                      const newContributionAmount = parseFloat(e.target.value.replace('$', '')) || 0;
+                      const newTotal = parseFloat(result.startingAmount) + parseFloat(result.compoundingAmount) + newContributionAmount;
+
+                      setRealContributionsValues((prevValues) => ({
+                        ...prevValues,
+                        [result.period]: newContributionAmount.toFixed(2),
+                      }));
+
                       setRealTotalValues((prevValues) => ({
                         ...prevValues,
-                        [result.period]: e.target.value.replace('$', ''),
-                      }))
-                    }
+                        [result.period]: newTotal.toFixed(2),
+                      }));
+                    }}
                   />
-                </td>              
+                </td>
               </tr>
             ))}
           </tbody>
@@ -321,3 +336,4 @@ const PlanDetail = ({ user }) => {
 };
 
 export default PlanDetail;
+
