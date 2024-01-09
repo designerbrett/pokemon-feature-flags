@@ -196,10 +196,10 @@ th, td {
   }
 }
 .totals-section {
-  position: fixed;
+  /*position: fixed;
   bottom: 0;
   left: 0;
-  z-index: 2;
+  z-index: 2;*/
   background: #333;
   padding: 2%;
   margin: 2%;

@@ -389,6 +389,14 @@ useEffect(() => {
           <p><strong>Frequency:</strong> {compoundingFrequency}</p>
         </div>
       </div>
+
+      <div className='totals-section'>
+        <p><strong>Final Balance:</strong> ${formatNumberWithCommas(finalBalance)}</p>
+        <p><strong>Interest Accrued:</strong> ${formatNumberWithCommas(compoundInterestAccrued.toFixed(2))}</p>
+        <p><strong>Total Contributions:</strong> ${formatNumberWithCommas(totalContributions)}</p>
+        <p><strong>Return:</strong> {returnPercentage}%</p>
+      </div>
+
       <Bar data={chartData} options={chartOptions} />
       <div>
         <h2 className='results-heading'>Results</h2>
@@ -409,7 +417,6 @@ useEffect(() => {
               <th>Start</th>
               <th>Projected Compound</th>
               <th>Projected Contributions</th>
-              <th>Projected End Total</th>
             </tr>
           </thead>
           <tbody>
@@ -419,21 +426,11 @@ useEffect(() => {
                 <td>${result.startingAmount}</td>
                 <td>${result.compoundingAmount}</td>
                 <td>${result.contributionAmount}</td>
-                <td>${result.total}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      
-
-        <div className='totals-section'>
-          <p><strong>Final Balance:</strong> ${formatNumberWithCommas(finalBalance)}</p>
-          <p><strong>Interest Accrued:</strong> ${formatNumberWithCommas(compoundInterestAccrued.toFixed(2))}</p>
-          <p><strong>Total Contributions:</strong> ${formatNumberWithCommas(totalContributions)}</p>
-          <p><strong>Return:</strong> {returnPercentage}%</p>
-        </div>
       </div>
     </div>
   );
