@@ -94,16 +94,7 @@ h2 {
 .display-values strong {
   display: block;
 }
-.inputs input {
-  font-size: 2.5rem;
-  padding-left: 0;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid #CCC;
-  margin-bottom: 16px;
-  background: transparent;
-  font-family: 'VarelaRoundRegular', sans-serif;
-}
+
 .numeric-input {
   display: flex;
   align-items: center;

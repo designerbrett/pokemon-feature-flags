@@ -264,7 +264,6 @@ const PlanDetail = ({ user }) => {
               <th>Start</th>
               <th>Projected Compound</th>
               <th>Projected Contributions</th>
-              <th>Projected End Total</th>
               <th>Real</th>
               <th>Updated Start</th>
               <th>Real Compound</th>
@@ -279,7 +278,6 @@ const PlanDetail = ({ user }) => {
                 <td>${result.startingAmount}</td>
                 <td>${result.compoundingAmount}</td>
                 <td>${result.contributionAmount}</td>
-                <td>${result.total}</td>
                 <td> </td>
                 <td>${result.startingAmount}</td>
                 <td>
