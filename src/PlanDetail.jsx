@@ -6,6 +6,7 @@ import { database, db, onValue, ref, update } from './firebase';
 
 const PlanDetail = ({ user }) => {
   const [planDetails, setPlanDetails] = useState(null);
+  const [startingYear, setStartingYear] = useState(new Date().getFullYear());
   const [results, setResults] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -26,6 +27,7 @@ const PlanDetail = ({ user }) => {
           console.log('data', data);
           if (!planDetails) {
             setPlanDetails(data);
+            setStartingYear(data?.data?.startingYear || new Date().getFullYear());
           }
         });
       } catch (error) {
@@ -70,30 +72,31 @@ const PlanDetail = ({ user }) => {
     const returnRate = parseFloat(planDetails?.data?.estimatedReturn) / 100 || 0;
     const compoundingFactor = planDetails?.data?.compoundingFrequency === 'yearly' ? 1 : 12;
     const contribution = parseFloat(planDetails?.data?.contributionAmount) || 0;
-
+  
     let newResults = [];
-
+  
     for (let index = 0; index < parseInt(planDetails?.data?.yearsTillRetirement) * compoundingFactor; index++) {
       const yearlyReturn = currentTotal * returnRate;
       const monthlyReturn = yearlyReturn / 12;
-
+      const currentYear = parseInt(startingYear) + Math.floor(index / compoundingFactor);
+  
       const startingAmount = index === 0 ? currentTotal : parseFloat(newResults[index - 1].total);
-
+  
       currentTotal = startingAmount + (planDetails?.data?.compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
-
+  
       const totalWithContribution = currentTotal + contribution;
-
+  
       newResults.push({
-        period: index + 1,
+        period: currentYear,
         startingAmount: startingAmount.toFixed(2),
         compoundingAmount: (planDetails?.data?.compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2),
         contributionAmount: contribution.toFixed(2),
         total: totalWithContribution.toFixed(2),
       });
     }
-
+  
     setResults(newResults);
-
+  
     // Update the chart data
     updateChartData(newResults);
   };
@@ -201,6 +204,22 @@ const PlanDetail = ({ user }) => {
             />
           </div>
           <div>
+            <label>Starting Year:</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="\d{4}"
+              maxLength="4"
+              value={startingYear}
+              onChange={(e) => {
+                const inputYear = e.target.value;
+                if (/^\d{0,4}$/.test(inputYear)) {
+                  setStartingYear(inputYear);
+                }
+              }}
+            />
+          </div>
+          <div>
             <label>Years to save:</label>
             <div className="numeric-input">
               <input
@@ -245,76 +264,78 @@ const PlanDetail = ({ user }) => {
       </div>
 
       <div className='results-container'>
-        <h2>Projected</h2>
-        <table>
-          <thead>
-            <tr>
-              <th className='sticky'>Period</th>
-              <th>Start</th>
-              <th>Projected Compound</th>
-              <th>Projected Contributions</th>
-              <th>Projected Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((result) => (
-              <tr key={result.period}>
-                <td className='sticky'>{result.period}</td>
-                <td>${result.startingAmount}</td>
-                <td>${result.compoundingAmount}</td>
-                <td>${result.contributionAmount}</td>
-                <td>${result.total}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  <h2>Projected</h2>
+  <table>
+    <thead>
+      <tr>
+        <th className='sticky'>Period</th>
+        <th>Start</th>
+        <th>Projected Compound</th>
+        <th>Projected Contributions</th>
+        <th>Projected Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {results.map((result) => (
+        <tr key={result.period}>
+          {/* Fix the line below */}
+          <td className='sticky'>{result.period}</td>
+          <td>${result.startingAmount}</td>
+          <td>${result.compoundingAmount}</td>
+          <td>${result.contributionAmount}</td>
+          <td>${result.total}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 
-        <h2>User Adjusted</h2>
-        <table>
-          <thead>
-            <tr>
-              <th className='sticky'>Period</th>
-              <th>Updated Start</th>
-              <th>Real Compound</th>
-              <th>Real Contributions</th>
-              <th>Real Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((result) => (
-              <tr key={result.period}>
-                <td className='sticky'>{result.period}</td>
-                <td>${result.startingAmount}</td>
-                <td>${result.compoundingAmount}</td>
-                <td>
-                  <input
-                    type="text"
-                    value={realContributionsValues[result.period] || result.contributionAmount}
-                    onChange={(e) =>
-                      setRealContributionsValues((prevValues) => ({
-                        ...prevValues,
-                        [result.period]: e.target.value.replace('$', ''),
-                      }))
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={result.total || result.total}
-                    onChange={(e) =>
-                      setRealTotalValues((prevValues) => ({
-                        ...prevValues,
-                        [result.period]: e.target.value.replace('$', ''),
-                      }))
-                    }
-                  />
-                </td>              
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  <h2>User Adjusted</h2>
+  <table>
+    <thead>
+      <tr>
+        <th className='sticky'>Period</th>
+        <th>Updated Start</th>
+        <th>Real Compound</th>
+        <th>Real Contributions</th>
+        <th>Real Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {results.map((result) => (
+        <tr key={result.period}>
+          {/* Fix the line below */}
+          <td className='sticky'>{result.period}</td>
+          <td>${result.startingAmount}</td>
+          <td>${result.compoundingAmount}</td>
+          <td>
+            <input
+              type="text"
+              value={realContributionsValues[result.period] || result.contributionAmount}
+              onChange={(e) =>
+                setRealContributionsValues((prevValues) => ({
+                  ...prevValues,
+                  [result.period]: e.target.value.replace('$', ''),
+                }))
+              }
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              value={result.total || result.total}
+              onChange={(e) =>
+                setRealTotalValues((prevValues) => ({
+                  ...prevValues,
+                  [result.period]: e.target.value.replace('$', ''),
+                }))
+              }
+            />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
       {chartData && <Bar data={chartData} options={chartOptions} />}
     </div>
   );

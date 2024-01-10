@@ -23,6 +23,7 @@ const RetirementPlanner = ({ user, params = {} }) => {
   const [planName, setPlanName] = useState('');
   const { planName: urlPlanName } = params;
   const [currentAssets, setCurrentAssets] = useState(localStorage.getItem('currentAssets') || '');
+  const [startingYear, setStartingYear] = useState(new Date().getFullYear());
   const [yearsTillRetirement, setYearsTillRetirement] = useState(localStorage.getItem('yearsTillRetirement') || '');
   const [estimatedReturn, setEstimatedReturn] = useState(localStorage.getItem('estimatedReturn') || '');
   const [contributionAmount, setContributionAmount] = useState(localStorage.getItem('contributionAmount') || '');
@@ -31,6 +32,7 @@ const RetirementPlanner = ({ user, params = {} }) => {
   const [showInputs, setShowInputs] = useState(true);
   const [enteredValues, setEnteredValues] = useState({
     currentAssets: '',
+    startingYear: '',
     yearsTillRetirement: '',
     estimatedReturn: '',
     contributionAmount: '',
@@ -53,6 +55,7 @@ const RetirementPlanner = ({ user, params = {} }) => {
   
     const planData = {
       currentAssets,
+      startingYear,
       yearsTillRetirement,
       estimatedReturn,
       contributionAmount,
@@ -107,6 +110,7 @@ useEffect(() => {
         if (planData) {
           // Update state with the fetched plan data
           setCurrentAssets(planData.currentAssets || '');
+          setStartingYear(planData.startingYear || '');
           setYearsTillRetirement(planData.yearsTillRetirement || '');
           setEstimatedReturn(planData.estimatedReturn || '');
           setContributionAmount(planData.contributionAmount || '');
@@ -137,6 +141,7 @@ useEffect(() => {
   useEffect(() => {
     setEnteredValues({
       currentAssets,
+      startingYear,
       yearsTillRetirement,
       estimatedReturn,
       contributionAmount,
@@ -150,7 +155,7 @@ useEffect(() => {
     //localStorage.setItem('compoundingFrequency', compoundingFrequency);
 
     calculateRetirementPlan();
-  }, [currentAssets, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency, visibleOptions]);
+  }, [currentAssets, startingYear, yearsTillRetirement, estimatedReturn, contributionAmount, compoundingFrequency, visibleOptions]);
 
   useEffect(() => {
     calculateRetirementPlan();
@@ -167,6 +172,7 @@ useEffect(() => {
     for (let index = 0; index < parseInt(yearsTillRetirement) * compoundingFactor; index++) {
       const yearlyReturn = currentTotal * returnRate;
       const monthlyReturn = yearlyReturn / 12;
+      const currentYear = parseInt(startingYear) + Math.floor(index / compoundingFactor);
   
       // Calculate the starting amount based on the period
       const startingAmount = index === 0 ? currentTotal : parseFormattedNumber(newResults[index - 1].total);
@@ -176,7 +182,7 @@ useEffect(() => {
       const totalWithContribution = currentTotal + contribution;
   
       newResults.push({
-        period: index + 1,
+        period: currentYear, // Use currentYear as the period
         startingAmount: formatNumberWithCommas(startingAmount.toFixed(2)),
         compoundingAmount: formatNumberWithCommas((compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn).toFixed(2)),
         contributionAmount: formatNumberWithCommas(contribution.toFixed(2)),
@@ -317,6 +323,22 @@ useEffect(() => {
                 pattern="[0-9]*"
                 value={`$${currentAssets}`}
                 onChange={(e) => setCurrentAssets(e.target.value.replace('$', ''))}
+              />
+            </div>
+            <div>
+              <label>Starting Year:</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}"
+                maxLength="4"
+                value={startingYear}
+                onChange={(e) => {
+                  const inputYear = e.target.value;
+                  if (/^\d{0,4}$/.test(inputYear)) {
+                    setStartingYear(inputYear);
+                  }
+                }}
               />
             </div>
             <div>

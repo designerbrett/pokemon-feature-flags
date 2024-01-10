@@ -19,12 +19,13 @@ export const getUsername = (userId) => {
   return get(userRef).then((snapshot) => snapshot.val()?.username || '');
 };
 
-export const savePlan = (userId, planName, planData) => {
+export const savePlan = (userId, planName, planData, startingYear) => {
   const db = getDatabase();
   const userPlansRef = ref(db, `users/${userId}/plans`);
   const newPlanRef = push(userPlansRef);
 
   const timestamp = new Date().toISOString();
+  const updatedPlanData = { ...planData, startingYear };
 
   return set(newPlanRef, { name: planName, data: planData, timestamp })
     .then(() => newPlanRef.key)
