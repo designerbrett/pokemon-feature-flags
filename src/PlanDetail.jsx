@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar, Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, PointElement, LinearScale, BarElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { database, db, onValue, ref, update } from './firebase';
 
 const PlanDetail = ({ user }) => {
@@ -68,7 +68,12 @@ const PlanDetail = ({ user }) => {
       },
     }));
 
-    setIsDirty(true);
+    if (property === 'startingYear') {
+      setStartingYear(value);
+      setIsDirty(true); // Update isDirty state for 'startingYear' changes
+    } else {
+      setIsDirty(true);
+    }
   };
 
   const calculateRetirementPlan = () => {
@@ -144,6 +149,7 @@ const PlanDetail = ({ user }) => {
       setSaving(true);
 
       const { data, ...rest } = planDetails;
+      data.startingYear = startingYear;
 
       await update(ref(database, `users/${user.uid}/plans/${planId}/data`), data);
 
@@ -160,7 +166,9 @@ const PlanDetail = ({ user }) => {
   ChartJS.register(
     CategoryScale,
     LinearScale,
+    PointElement,
     BarElement,
+    LineElement,
     Title,
     Tooltip,
     Legend
@@ -169,7 +177,7 @@ const PlanDetail = ({ user }) => {
   const chartOptions = {
     plugins: {
       title: {
-        display: true,
+        display: false,
         text: 'Stacked Bar Chart',
       },
     },
@@ -341,6 +349,7 @@ const PlanDetail = ({ user }) => {
   </table>
 </div>
       {chartData && <Bar data={chartData} options={chartOptions} />}
+      {chartData && <Line data={chartData} options={chartOptions} />}
     </div>
   );
 };
