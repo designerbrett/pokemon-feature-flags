@@ -25,20 +25,24 @@ const PlanDetail = ({ user }) => {
         onValue(planRef, (snapshot) => {
           const data = snapshot.val();
           console.log('data', data);
-          if (!planDetails) {
-            setPlanDetails(data);
-            setStartingYear(data?.data?.startingYear || new Date().getFullYear());
+          setPlanDetails(data);
+  
+          // If startingYear is not set in data, fallback to current year
+          if (data?.data?.startingYear === undefined) {
+            setStartingYear(new Date().getFullYear());
+          } else {
+            setStartingYear(data?.data?.startingYear);
           }
         });
       } catch (error) {
         console.error('Error fetching plan details:', error);
       }
     };
-
+  
     if (user && planId) {
       fetchPlanDetails();
     }
-  }, [user, planId, planDetails]);
+  }, [user, planId]);
 
   useEffect(() => {
     if (planDetails) {
@@ -78,7 +82,7 @@ const PlanDetail = ({ user }) => {
     for (let index = 0; index < parseInt(planDetails?.data?.yearsTillRetirement) * compoundingFactor; index++) {
       const yearlyReturn = currentTotal * returnRate;
       const monthlyReturn = yearlyReturn / 12;
-      const currentYear = parseInt(startingYear) + Math.floor(index / compoundingFactor);
+      const currentYear = parseInt(planDetails?.data?.startingYear || startingYear) + Math.floor(index / compoundingFactor);
   
       const startingAmount = index === 0 ? currentTotal : parseFloat(newResults[index - 1].total);
   
