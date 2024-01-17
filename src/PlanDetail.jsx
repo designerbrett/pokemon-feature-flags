@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, PointElement, LinearScale, BarElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { database, db, onValue, ref, update } from './firebase';
+import SavingsTracker from './UserAdjustedTable'; // Import the SavingsTracker component
 
 const PlanDetail = ({ user }) => {
   const [planDetails, setPlanDetails] = useState(null);
@@ -26,7 +27,7 @@ const PlanDetail = ({ user }) => {
           const data = snapshot.val();
           console.log('data', data);
           setPlanDetails(data);
-  
+
           // If startingYear is not set in data, fallback to current year
           if (data?.data?.startingYear === undefined) {
             setStartingYear(new Date().getFullYear());
@@ -38,7 +39,7 @@ const PlanDetail = ({ user }) => {
         console.error('Error fetching plan details:', error);
       }
     };
-  
+
     if (user && planId) {
       fetchPlanDetails();
     }
@@ -53,11 +54,11 @@ const PlanDetail = ({ user }) => {
   useEffect(() => {
     calculateRetirementPlan();
   }, [planDetails?.data?.estimatedReturn, realContributionsValues]);
-  
+
   useEffect(() => {
     // Update the chart data
     updateChartData(results, realTotalValues, realContributionsValues);
-}, [results, realTotalValues, realContributionsValues]);
+  }, [results, realTotalValues, realContributionsValues]);
 
   const handleChange = (property, value) => {
     setPlanDetails((prevPlanDetails) => ({
@@ -81,20 +82,20 @@ const PlanDetail = ({ user }) => {
     const returnRate = parseFloat(planDetails?.data?.estimatedReturn) / 100 || 0;
     const compoundingFactor = planDetails?.data?.compoundingFrequency === 'yearly' ? 1 : 12;
     const contribution = parseFloat(planDetails?.data?.contributionAmount) || 0;
-  
+
     let newResults = [];
-  
+
     for (let index = 0; index < parseInt(planDetails?.data?.yearsTillRetirement) * compoundingFactor; index++) {
       const yearlyReturn = currentTotal * returnRate;
       const monthlyReturn = yearlyReturn / 12;
       const currentYear = parseInt(planDetails?.data?.startingYear || startingYear) + Math.floor(index / compoundingFactor);
-  
+
       const startingAmount = index === 0 ? currentTotal : parseFloat(newResults[index - 1].total);
-  
+
       currentTotal = startingAmount + (planDetails?.data?.compoundingFrequency === 'yearly' ? yearlyReturn : monthlyReturn);
-  
+
       const totalWithContribution = currentTotal + contribution;
-  
+
       newResults.push({
         period: currentYear,
         startingAmount: startingAmount.toFixed(2),
@@ -103,9 +104,9 @@ const PlanDetail = ({ user }) => {
         total: totalWithContribution.toFixed(2),
       });
     }
-  
+
     setResults(newResults);
-  
+
     // Update the chart data
     updateChartData(newResults);
   };
@@ -276,80 +277,38 @@ const PlanDetail = ({ user }) => {
       </div>
 
       <div className='results-container'>
-  <h2>Projected</h2>
-  <table>
-    <thead>
-      <tr>
-        <th className='sticky'>Period</th>
-        <th>Start</th>
-        <th>Projected Compound</th>
-        <th>Projected Contributions</th>
-        <th>Projected Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      {results.map((result) => (
-        <tr key={result.period}>
-          {/* Fix the line below */}
-          <td className='sticky'>{result.period}</td>
-          <td>${result.startingAmount}</td>
-          <td>${result.compoundingAmount}</td>
-          <td>${result.contributionAmount}</td>
-          <td>${result.total}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+        <h2>Projected</h2>
+        <table>
+          <thead>
+            <tr>
+              <th className='sticky'>Period</th>
+              <th>Start</th>
+              <th>Projected Compound</th>
+              <th>Projected Contributions</th>
+              <th>Projected Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((result) => (
+              <tr key={result.period}>
+                {/* Fix the line below */}
+                <td className='sticky'>{result.period}</td>
+                <td>${result.startingAmount}</td>
+                <td>${result.compoundingAmount}</td>
+                <td>${result.contributionAmount}</td>
+                <td>${result.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-  <h2>User Adjusted</h2>
-  <table>
-    <thead>
-      <tr>
-        <th className='sticky'>Period</th>
-        <th>Updated Start</th>
-        <th>Real Compound</th>
-        <th>Real Contributions</th>
-        <th>Real Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      {results.map((result) => (
-        <tr key={result.period}>
-          {/* Fix the line below */}
-          <td className='sticky'>{result.period}</td>
-          <td>${result.startingAmount}</td>
-          <td>${result.compoundingAmount}</td>
-          <td>
-            <input
-              type="text"
-              value={realContributionsValues[result.period] || result.contributionAmount}
-              onChange={(e) =>
-                setRealContributionsValues((prevValues) => ({
-                  ...prevValues,
-                  [result.period]: e.target.value.replace('$', ''),
-                }))
-              }
-            />
-          </td>
-          <td>
-            <input
-              type="text"
-              value={result.total || result.total}
-              onChange={(e) =>
-                setRealTotalValues((prevValues) => ({
-                  ...prevValues,
-                  [result.period]: e.target.value.replace('$', ''),
-                }))
-              }
-            />
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+        <h2>User Adjusted</h2>
+        <SavingsTracker numYears={parseInt(planDetails?.data?.yearsTillRetirement) || 8} /> {/* Pass numYears as a prop */}
+      </div>
       {chartData && <Bar data={chartData} options={chartOptions} />}
       {chartData && <Line data={chartData} options={chartOptions} />}
+   
+
     </div>
   );
 };
