@@ -1,137 +1,175 @@
-// App.jsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import SignUp from './components/SignUp';
-import SignIn from './components/SignIn';
-import Header from './components/Header';
-import RetirementPlanner from './RetirementPlanner';
-import PlanDetail from './PlanDetail';
-import UserAccount from './UserAccount';
-import { onAuthStateChange } from './components/firebase';
-import { auth } from './components/firebase';
-import { getPlans, deletePlan } from './components/firebaseFunctions';
-import logo from '/images/wd-logo.png';
+import InitialInputForm from './InitialInputForm';
+import ProjectionTable from './ProjectionTable';
+import RetirementChart from './RetirementChart';
+import AuthUI from './AuthUI';
+import { auth, database, ref, set, onValue } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
-console.log(logo);
-
-const App = () => {
+function App() {
+  const [initialInputs, setInitialInputs] = useState({
+    startingYear: new Date().getFullYear(), // Default to current year
+    startingAmount: '',
+    expectedReturn: '',
+    yearlyContribution: '',
+    years: 5,
+  });
+  const [projections, setProjections] = useState([]);
   const [user, setUser] = useState(null);
-  const [plans, setPlans] = useState([]);
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [savedPlans, setSavedPlans] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
-        setUser(authUser);
-
-        // Fetch plans (including IDs) when the user is authenticated
-        getPlans(authUser.uid)
-          .then((plans) => {
-            setPlans(plans);
-          })
-          .catch((error) => console.error('Error fetching plans:', error));
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        loadSavedPlans(user.uid);
       } else {
         setUser(null);
-        setPlans([]); // Clear plans when the user is not authenticated
+        setSavedPlans([]);
       }
     });
 
-    return () => {
-      unsubscribe();
-    };
+    // This will now work correctly
+    return () => unsubscribe();
   }, []);
 
-  const toggleMenu = () => {
-    setMenuVisible(!menuVisible);
+  useEffect(() => {
+    calculateProjections();
+  }, [initialInputs]);
+
+  const calculateProjections = () => {
+    const startingYear = parseInt(initialInputs.startingYear) || new Date().getFullYear();
+    const startingAmount = parseFloat(initialInputs.startingAmount) || 0;
+    const expectedReturn = parseFloat(initialInputs.expectedReturn) || 0;
+    const yearlyContribution = parseFloat(initialInputs.yearlyContribution) || 0;
+    const years = parseInt(initialInputs.years) || 0;
+
+    let balance = startingAmount;
+    let newProjections = [];
+
+    for (let i = 0; i < years; i++) {
+      let yearStart = balance;
+      let contribution = yearlyContribution;
+      let returns = (yearStart + contribution) * (expectedReturn / 100);
+      let yearEnd = yearStart + contribution + returns;
+
+      newProjections.push({
+        year: startingYear + i,
+        startBalance: parseFloat(yearStart.toFixed(2)),
+        contribution: parseFloat(contribution.toFixed(2)),
+        returns: parseFloat(returns.toFixed(2)),
+        endBalance: parseFloat(yearEnd.toFixed(2))
+      });
+
+      balance = yearEnd;
+    }
+
+    setProjections(newProjections);
   };
 
-  const handlePlanSelection = (selectedPlanId) => {
-    // Use the plan ID directly for navigation
-    navigate(`/plan/${encodeURIComponent(selectedPlanId)}`);
+  const handleRowEdit = (year, newData) => {
+    const updatedProjections = [...projections];
+    updatedProjections[year] = { ...updatedProjections[year], ...newData };
+  
+    // Recalculate all subsequent years
+    for (let i = year; i < updatedProjections.length; i++) {
+      let prevYear = i === 0 ? { endBalance: initialInputs.startingAmount } : updatedProjections[i - 1];
+      let currentYear = updatedProjections[i];
+  
+      let yearStart = parseFloat(prevYear.endBalance) || 0;
+      let contribution = parseFloat(currentYear.contribution) || 0;
+      let returns = (yearStart + contribution) * (initialInputs.expectedReturn / 100);
+      let yearEnd = yearStart + contribution + returns;
+  
+      updatedProjections[i] = {
+        ...currentYear,
+        startBalance: parseFloat(yearStart.toFixed(2)),
+        contribution: contribution,
+        returns: parseFloat(returns.toFixed(2)),
+        endBalance: parseFloat(yearEnd.toFixed(2))
+      };
+    }
+  
+    setProjections(updatedProjections);
   };
 
-  const handleDeletePlan = async (planId) => {
-    if (window.confirm('Are you sure you want to delete this plan?')) {
-      try {
-        await deletePlan(user.uid, planId);
-        // After deleting the plan, update the list of plans
-        const updatedPlans = await getPlans(user.uid);
-        setPlans(updatedPlans);
-      } catch (error) {
-        console.error('Error deleting plan:', error);
-      }
+  const saveData = () => {
+    if (user) {
+      const newPlan = {
+        id: Date.now(),
+        name: `Plan ${savedPlans.length + 1}`,
+        initialInputs,
+        projections
+      };
+      const plansRef = ref(database, `users/${user.uid}/plans`);
+      set(plansRef, [...savedPlans, newPlan])
+        .then(() => {
+          console.log('Plan saved successfully');
+          setSavedPlans([...savedPlans, newPlan]);
+          // You might want to show a success message to the user here
+        })
+        .catch((error) => {
+          console.error('Error saving plan: ', error);
+          // You might want to show an error message to the user here
+        });
     }
   };
 
-  return (
-    <Router>
-      <div>
-        
+  const loadSavedPlans = (userId) => {
+    const plansRef = ref(database, `users/${userId}/plans`);
+    onValue(plansRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setSavedPlans(data);
+      }
+    }, (error) => {
+      console.error('Error loading saved plans: ', error);
+      // You might want to show an error message to the user here
+    });
+  };
 
-        {/* Slide-in Menu */}
-        <div id="doodleNav" className={`doodles-menu ${menuVisible ? 'visible' : ''}`}>
-        <button className="close-btn" onClick={() => setMenuVisible(false)}>
-            &times;
-          </button>
+  const loadPlan = (plan) => {
+    setInitialInputs(plan.initialInputs);
+    setProjections(plan.projections);
+  };
+
+  const clearForm = () => {
+    setInitialInputs({
+      startingYear: new Date().getFullYear(),
+      startingAmount: '',
+      expectedReturn: '',
+      yearlyContribution: '',
+      years: 5,
+    });
+    setProjections([]);
+  };
+
+  return (
+    <div>
+      <h1>Retirement Calculator</h1>
+      <AuthUI user={user} />
+      <InitialInputForm inputs={initialInputs} setInputs={setInitialInputs} />
+      <ProjectionTable projections={projections} onRowEdit={handleRowEdit} />
+      <RetirementChart projections={projections} />
+      <div>
+        <button onClick={clearForm}>Clear Form</button>
+        {user && <button onClick={saveData}>Save Plan</button>}
+      </div>
+      {user && savedPlans.length > 0 && (
+        <div>
+          <h2>Saved Plans</h2>
           <ul>
-            {plans.map((plan) => (
+            {savedPlans.map((plan) => (
               <li key={plan.id}>
-                <Link to={`/plan/${encodeURIComponent(plan.id)}`} onClick={() => handlePlanSelection(plan.id)}>
-                  {plan.name}
-                </Link>
-                <p className='menu-timestamp'>{plan.timestamp ? new Date(plan.timestamp).toLocaleString() : ''}</p>
-                <button className='btn-no-bg' onClick={() => handleDeletePlan(plan.id)}><i className='fa fa-trash-o'></i></button>
+                {plan.name} <button onClick={() => loadPlan(plan)}>Load</button>
               </li>
             ))}
           </ul>
-
-          {!user ? (
-          <div>
-            <Link to="/signup">Sign Up</Link>
-            <Link to="/signin">Sign In</Link>
-          </div>
-        ) : (
-          <div>
-            <p>
-              Welcome, <Link to="/user-account">{user.email}</Link>
-            </p>
-            <button onClick={() => auth.signOut()}>Sign Out</button>
-          </div>
-        )}
         </div>
-        <h1>
-          {/* Hamburger Menu Button */}
-        <button className="hamburger-menu" onClick={toggleMenu}>
-          ☰
-        </button>
-          <Link to="/"><img className='applogo' src={logo} alt="Logo" /></Link>
-          <div></div>
-        </h1>
-        
-
-        <Routes>
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/user-account" element={<UserAccount user={user} />} />
-          <Route path="/retirement-planner" element={<RetirementPlanner user={user} />} />
-          <Route path="/retirement-planner/:planId" element={<RetirementPlanner user={user} />} />
-          <Route path="/plan/:planId" element={<PlanDetail user={user} />}
-/>
-          <Route path="*" element={<Home user={user} />} />
-          {/* Add other routes as needed */}
-        </Routes>
-      </div>
-    </Router>
-  );
-};
-
-const Home = ({ user }) => {
-  return (
-    <div>
-      {/* Content for the home page */}
-      {<RetirementPlanner user={user} />}
+      )}
+      {!user && <p>Log in to save your plans and access your saved plans.</p>}
     </div>
   );
-};
+}
 
 export default App;

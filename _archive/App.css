@@ -1,0 +1,295 @@
+@font-face {
+  font-family: 'VarelaRoundRegular';
+  src: url('font/VarelaRound-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0 0 120px 0;
+  font-family: "Helvetica", "Arial", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 20px;
+  padding: 16px;
+  line-height: 1.5rem;
+}
+.applogo {
+  width: 200px;
+}
+button {
+  background-color: rgb(79 70 229);
+  color: #FFF;
+  border-radius: 0.375rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+button.close-button {
+  background-color: transparent;
+  color: #333;
+  padding: 8px;
+  line-height: 1.25rem;
+}
+button.btn-no-bg {
+  background-color: transparent;
+}
+button:disabled {
+  background-color: rgb(231 231 231);
+  color: rgb(16 16 16 / 32%);
+}
+input {
+  border: 1px solid rgb(209 213 219);
+  padding: 8px;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+}
+.input-container input {
+  display: block;
+  width: 100%;
+}
+
+h1 {
+  font-size: 1.5rem;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #FFF;
+  padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+}
+h2 {
+  font-size: 1.25rem;
+}
+
+.input-container {
+  background-color: hsl(0 0% 97% / 1);
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid hsl(0 0% 93% / 1);
+  margin: 16px 0;
+  box-shadow: 0 0.125rem 0.25rem 0 #353a3e14;
+}
+.inputs label,
+.display-values strong {
+  font-size: 0.8rem;
+  color: #777;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.display-values {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+@media (max-width:480px)  {
+  .display-values {
+    font-size: .75rem;
+  }
+}
+.display-values strong {
+  display: block;
+}
+
+.numeric-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+.results-container {
+  width: 100%;
+  overflow-y: scroll;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Add this CSS for the sticky column */
+.sticky {
+  position: sticky;
+  left: 0;
+  background-color: #f2f2f2;
+  z-index: 1;
+}
+
+.results-heading {
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+.results-header {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #555;
+  background-color: #FFF;
+  padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+}
+@media (max-width:480px)  {
+  .results-header {
+    font-size: .75rem;
+  }
+}
+.results-header div {
+  text-align: right;
+}
+.results-header div.year {
+  text-align: left;
+}
+
+.results {
+  max-width: 100%;
+  margin-bottom: 100px;
+}
+.results .card:nth-child(even) {
+  background: #f1f1f1;
+}
+.results .card {
+  width: 100%;
+  padding: 8px;
+  font-family: 'VarelaRoundRegular', sans-serif;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+@media (max-width:480px)  {
+  .results .card {
+    font-size: .75rem;
+  }
+}
+.results .card div {
+  text-align: right;
+}
+.results .card div.year {
+  text-align: right;
+  min-width: 38px;
+}
+@media (max-width:480px)  {
+  .results .card div.year {
+    min-width: 23px;
+  }
+}
+.results .dollar-sign {
+  font-size: 1rem;
+  color: #555;
+}
+@media (max-width:480px)  {
+  .results .dollar-sign {
+    font-size: 0.5rem;
+  }
+}
+.totals-section {
+  /*position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 2;*/
+  background: #333;
+  padding: 2%;
+  margin: 2%;
+  width: 96%;
+  border-radius: 8px;
+  color: #FFF;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  overflow-y: scroll;
+}
+@media (max-width:480px)  {
+  .totals-section {
+    font-size: 0.75rem;
+  }
+}
+
+.ReactModal__Overlay.ReactModal__Overlay--after-open {
+  z-index: 4;
+  background-color: rgb(0 0 0 / 75%) !important;
+}
+.ReactModal__Content div {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+.ReactModal__Content div input {
+  margin-right: 8px;
+}
+.close-button {
+  position: absolute;
+  right: 24px;
+  font-size: 32px;
+}
+
+.doodles-menu {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: scroll;
+  transition: 0.5s;
+  color: #818181;
+  font-size: 14px;
+}
+.doodles-menu.visible {
+  width: 250px;
+  z-index: 3;
+}
+.doodles-menu ul {
+  padding: 16px;
+  margin-top: 16px;
+}
+.doodles-menu li {
+  list-style: none;
+  padding: 8px 32px 8px 8px;
+  border-radius: 4px;
+  position: relative;
+}
+.doodles-menu li:hover {
+  background-color: #202123;
+  cursor: pointer;
+}
+.doodles-menu li button {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  color: #777;
+  display: none;
+}
+.doodles-menu li:hover button {
+  display: block;
+} 
+
+.doodles-menu a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #FFF;
+  display: block;
+  transition: 0.3s;
+}
+
+.doodles-menu .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}

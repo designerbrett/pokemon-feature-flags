@@ -26,7 +26,7 @@ const googleProvider = new GoogleAuthProvider();
 
 // Set up onAuthStateChanged listener
 export const onAuthStateChange = (callback) => {
-  return onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, (user) => {
     callback(user);
   });
 };
