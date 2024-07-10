@@ -1,54 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { formatCurrency } from './utils';
 
-function ProjectionRow({ data, onEdit }) {
+function ProjectionRow({ data, actualData, onActualDataUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState(data);
+  const [editData, setEditData] = useState({
+    contribution: actualData.contribution || data.contribution,
+    returns: actualData.returns || data.returns
+  });
+
+  useEffect(() => {
+    setEditData({
+      contribution: actualData.contribution || data.contribution,
+      returns: actualData.returns || data.returns
+    });
+  }, [actualData, data]);
 
   const handleEdit = () => {
     setIsEditing(true);
-    setEditData(data);  // Reset editData to current data when entering edit mode
   };
 
   const handleSave = () => {
     setIsEditing(false);
-    onEdit(editData);
+    onActualDataUpdate(data.year, editData);
   };
 
   const handleChange = (e) => {
-    const value = e.target.value === '' ? '' : parseFloat(e.target.value);
+    const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
     setEditData({ ...editData, [e.target.name]: value });
   };
 
-  if (isEditing) {
-    return (
-      <tr>
-        <td>{data.year}</td>
-        <td>{data.startBalance.toFixed(2)}</td>
-        <td>
-          <input
-            type="number"
-            name="contribution"
-            value={editData.contribution}
-            onChange={handleChange}
-          />
-        </td>
-        <td>{data.returns.toFixed(2)}</td>
-        <td>{data.endBalance.toFixed(2)}</td>
-        <td><button onClick={handleSave}>Save</button></td>
-      </tr>
-    );
-  }
+  const actualStartBalance = actualData.startBalance || data.startBalance;
+  const actualContribution = actualData.contribution || data.contribution;
+  const actualReturns = actualData.returns || data.returns;
+  const actualEndBalance = actualData.endBalance || (actualStartBalance + actualContribution + actualReturns);
 
-  return (
-    <tr>
+  const difference = actualEndBalance - data.endBalance;
+  const differenceClass = difference > 0 ? 'positive' : difference < 0 ? 'negative' : '';
+
+  const rowContent = (
+    <>
       <td>{data.year}</td>
-      <td>{data.startBalance.toFixed(2)}</td>
-      <td>{data.contribution.toFixed(2)}</td>
-      <td>{data.returns.toFixed(2)}</td>
-      <td>{data.endBalance.toFixed(2)}</td>
-      <td><button onClick={handleEdit}>Edit</button></td>
-    </tr>
+      <td>{formatCurrency(data.startBalance)}</td>
+      <td>{formatCurrency(data.contribution)}</td>
+      <td>{formatCurrency(data.returns)}</td>
+      <td>{formatCurrency(data.endBalance)}</td>
+      <td>{isEditing ? (
+        <input
+          type="number"
+          name="contribution"
+          value={editData.contribution}
+          onChange={handleChange}
+        />
+      ) : formatCurrency(actualContribution)}</td>
+      <td>{formatCurrency(actualReturns)}</td>
+      <td>{formatCurrency(actualEndBalance)}</td>
+      <td className={differenceClass}>{formatCurrency(difference)}</td>
+      <td>
+        {isEditing ? (
+          <button onClick={handleSave}>Save</button>
+        ) : (
+          <button onClick={handleEdit}>Edit</button>
+        )}
+      </td>
+    </>
   );
+
+  return <tr>{rowContent}</tr>;
 }
 
 export default ProjectionRow;
