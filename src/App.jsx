@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import Header from './Header';
 import InitialInputForm from './InitialInputForm';
 import ProjectionTable from './ProjectionTable';
 import RetirementChart from './RetirementChart';
-import SavePlanForm from './SavePlanForm';
-import SavedPlansList from './SavedPlansList';
 import AuthUI from './AuthUI';
 import { auth, database, ref, set, onValue } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -90,7 +89,7 @@ function App() {
 
       const startBalance = year === projections[0].year 
         ? projectionForYear.startBalance 
-        : (updatedData.find(d => d.year === year - 1)?.endBalance || projectionForYear.startBalance);
+        : (updatedData[yearIndex - 1]?.endBalance || projectionForYear.startBalance);
 
       const endBalance = startBalance + actualContribution + actualReturns;
 
@@ -235,39 +234,34 @@ function App() {
 
   return (
     <div>
-      <h1>Retirement Calculator</h1>
-      <AuthUI user={user} />
-      <InitialInputForm 
-        inputs={initialInputs} 
-        setInputs={setInitialInputs}
+      <header>
+        <p>WealthDoodle</p>
+      <Header 
         planName={planName}
         setPlanName={setPlanName}
+        savedPlans={savedPlans}
+        onSave={saveData}
+        onRename={renamePlan}
+        onDelete={deletePlan}
+        onLoad={loadPlan}
       />
-      <ProjectionTable 
-        projections={projections} 
-        actualData={actualData} 
-        onActualDataUpdate={updateActualData} 
-      />
-      <RetirementChart projections={projections} actualData={actualData} />
-      <div>
-        <button onClick={clearForm}>Clear Form</button>
-        {user && (
-          <SavePlanForm 
-            planName={planName} 
-            setPlanName={setPlanName} 
-            onSave={saveData}
-          />
-        )}
-      </div>
-      {user && savedPlans.length > 0 && (
-        <SavedPlansList 
-          plans={savedPlans}
-          onLoad={loadPlan}
-          onDelete={deletePlan}
-          onRename={renamePlan}
+      <AuthUI user={user} />
+      </header>
+      <main className="p-4">
+        
+        <InitialInputForm 
+          inputs={initialInputs} 
+          setInputs={setInitialInputs}
         />
-      )}
-      {!user && <p>Log in to save your plans and access your saved plans.</p>}
+        <ProjectionTable 
+          projections={projections} 
+          actualData={actualData} 
+          onActualDataUpdate={updateActualData} 
+        />
+        <RetirementChart projections={projections} actualData={actualData} />
+        <button onClick={clearForm} className="mt-4 bg-gray-300 px-4 py-2 rounded">Clear Form</button>
+      </main>
+      {!user && <p className="p-4">Log in to save your plans and access your saved plans.</p>}
     </div>
   );
 }
