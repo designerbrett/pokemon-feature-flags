@@ -38,7 +38,7 @@ function RetirementChart({ projections, actualData }) {
       {
         type: 'line',
         label: 'Projected End Balance',
-        data: projections.map(p => p.endBalance),
+        data: projections.map(p => ({ x: p.year, y: p.endBalance })),
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 2,
@@ -51,7 +51,10 @@ function RetirementChart({ projections, actualData }) {
         label: 'Actual End Balance',
         data: years.map(year => {
           const actualYear = actualData.find(d => d.year === year);
-          return actualYear ? actualYear.endBalance : null;
+          return { 
+            x: year, 
+            y: actualYear ? actualYear.endBalance : null 
+          };
         }),
         backgroundColor: 'rgba(255, 99, 132, 0.6)',
         borderColor: 'rgba(255, 99, 132, 1)',
@@ -88,6 +91,7 @@ function RetirementChart({ projections, actualData }) {
     },
     scales: {
       x: {
+        type: 'category',
         stacked: false,
       },
       y: {

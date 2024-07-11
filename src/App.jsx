@@ -79,14 +79,18 @@ function App() {
       let actualContribution = parseFloat(newData.contribution);
       let actualReturns = parseFloat(newData.returns);
       
-      // If both contribution and returns are 0 or empty, don't update
-      if (actualContribution === 0 && actualReturns === 0) {
+      // Allow for 0 values, but not empty or NaN values
+      if (isNaN(actualContribution) && isNaN(actualReturns)) {
         return prevData;
       }
 
+      // If one value is NaN, use the projected value
+      if (isNaN(actualContribution)) actualContribution = projectionForYear.contribution;
+      if (isNaN(actualReturns)) actualReturns = projectionForYear.returns;
+
       const startBalance = year === projections[0].year 
         ? projectionForYear.startBalance 
-        : (updatedData[yearIndex - 1]?.endBalance || projectionForYear.startBalance);
+        : (updatedData.find(d => d.year === year - 1)?.endBalance || projectionForYear.startBalance);
 
       const endBalance = startBalance + actualContribution + actualReturns;
 
