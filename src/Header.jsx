@@ -1,13 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { auth } from './firebase';
+import { signOut } from 'firebase/auth';
 
-function Header({ planName, setPlanName, savedPlans, onSave, onRename, onDelete, onLoad }) {
+function Header({ planName, setPlanName, savedPlans, onSave, onRename, onDelete, onLoad, user, onLogin }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [editingPlanId, setEditingPlanId] = useState(null);
   const [newPlanName, setNewPlanName] = useState('');
 
+  useEffect(() => {
+    if (!planName) {
+      setPlanName("Untitled Plan");
+    }
+  }, [planName, setPlanName]);
+
   const handleSave = () => {
-    onSave();
-    setIsDropdownOpen(false);
+    if (user) {
+      onSave();
+      setIsDropdownOpen(false);
+    } else {
+      alert("Please log in to save your plan.");
+      onLogin();
+    }
   };
 
   const handleRename = (planId, name) => {
@@ -16,21 +29,32 @@ function Header({ planName, setPlanName, savedPlans, onSave, onRename, onDelete,
   };
 
   const handleDelete = (planId) => {
-    onDelete(planId);
-    setIsDropdownOpen(false);
+    if (window.confirm("Are you sure you want to delete this plan?")) {
+      onDelete(planId);
+      setIsDropdownOpen(false);
+    }
+  };
+
+  const handleAuth = () => {
+    if (user) {
+      signOut(auth).catch((error) => console.error('Error signing out:', error));
+    } else {
+      onLogin();
+    }
   };
 
   return (
-    <div className="">
+    <header className="flex justify-between items-center p-4 bg-gray-100">
       <div className="relative">
         <button 
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center text-xl font-bold"
         >
-          {planName || 'Plan name'} <span className="ml-2">▼</span>
+          {planName} <span className="ml-2">▼</span>
         </button>
         {isDropdownOpen && (
           <div className="absolute top-full left-0 mt-2 w-64 bg-white shadow-lg rounded-md">
+            {!user && <p className="p-4">Log in to save your plans and access your saved plans.</p>}
             <input
               type="text"
               value={planName}
@@ -38,7 +62,13 @@ function Header({ planName, setPlanName, savedPlans, onSave, onRename, onDelete,
               className="w-full p-2 border-b"
               placeholder="Enter plan name"
             />
-            {savedPlans.map((plan) => (
+            <button 
+              onClick={handleSave}
+              className="w-full bg-blue-500 text-white px-4 py-2 hover:bg-blue-600"
+            >
+              Save Plan
+            </button>
+            {user && savedPlans.map((plan) => (
               <div key={plan.id} className="p-2 hover:bg-gray-100 flex justify-between items-center">
                 {editingPlanId === plan.id ? (
                   <input
@@ -68,20 +98,28 @@ function Header({ planName, setPlanName, savedPlans, onSave, onRename, onDelete,
                     Delete
                   </button>
                 </div>
+                
               </div>
             ))}
           </div>
         )}
       </div>
-      <button 
-        onClick={handleSave}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Save Plan
-      </button>
-
-      
-    </div>
+      {user ? (
+        <button 
+          onClick={onLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Sign Out
+        </button>
+      ) : (
+        <button 
+          onClick={onLogin}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Sign In
+        </button>
+      )}
+    </header>
   );
 }
 

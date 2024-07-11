@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import { auth, googleProvider } from './firebase';
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { auth } from './firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
 function AuthUI({ user }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const signInWithGoogle = () => {
-    signInWithPopup(auth, googleProvider)
-      .catch((error) => {
-        console.error("Error signing in with Google: ", error);
-      });
-  };
 
   const signInWithEmail = (e) => {
     e.preventDefault();
@@ -46,7 +39,6 @@ function AuthUI({ user }) {
 
   return (
     <div>
-      <button onClick={signInWithGoogle}>Sign In with Google</button>
       <form onSubmit={signInWithEmail}>
         <input
           type="email"
