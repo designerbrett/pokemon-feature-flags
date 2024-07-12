@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useAuth } from '../AuthContext';
@@ -11,16 +11,17 @@ function Login() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  if (currentUser) {
-    navigate('/profile');
-    return null;
-  }
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/profile');
+    }
+  }, [currentUser, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/profile');
+      // Navigation will happen in the useEffect hook
     } catch (error) {
       setError(error.message);
     }

@@ -42,6 +42,14 @@ function Header({ showPlanSelector, planName, setPlanName, savedPlans, onSave, o
     });
   };
 
+  const handleLoadPlan = (plan) => {
+    setPlanName(plan.name);
+    setInitialInputs(plan.initialInputs);
+    setProjections(plan.projections);
+    setActualData(plan.actualData);
+    setSelectedPlan(plan);
+  };
+
   return (
     <header className="flex justify-between items-center p-4 bg-gray-100">
       {showPlanSelector && (

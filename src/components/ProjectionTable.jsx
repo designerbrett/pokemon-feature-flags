@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import ProjectionRow from './ProjectionRow';
 
-function ProjectionTable({ projections, actualData, onActualDataUpdate }) {
+function ProjectionTable({ projections = [], actualData = [], onActualDataUpdate }) {
+  const processedActualData = useMemo(() => {
+    return projections.map(projection => {
+      const actual = actualData.find(d => d.year === projection.year) || {};
+      return {
+        year: projection.year,
+        startBalance: actual.startBalance !== undefined ? actual.startBalance : projection.startBalance,
+        contribution: actual.contribution !== undefined ? actual.contribution : projection.contribution,
+        returns: actual.returns !== undefined ? actual.returns : projection.returns,
+        endBalance: actual.endBalance !== undefined ? actual.endBalance : 
+          (actual.startBalance !== undefined ? actual.startBalance : projection.startBalance) +
+          (actual.contribution !== undefined ? actual.contribution : projection.contribution) +
+          (actual.returns !== undefined ? actual.returns : projection.returns)
+      };
+    });
+  }, [projections, actualData]);
+
   return (
     <table>
       <thead>
@@ -19,11 +35,11 @@ function ProjectionTable({ projections, actualData, onActualDataUpdate }) {
         </tr>
       </thead>
       <tbody>
-        {projections.map((yearData) => (
+        {projections.map((yearData, index) => (
           <ProjectionRow
             key={yearData.year}
             data={yearData}
-            actualData={actualData.find(d => d.year === yearData.year) || {}}
+            actualData={processedActualData[index]}
             onActualDataUpdate={onActualDataUpdate}
           />
         ))}
@@ -32,4 +48,4 @@ function ProjectionTable({ projections, actualData, onActualDataUpdate }) {
   );
 }
 
-export default ProjectionTable;
+export default React.memo(ProjectionTable);

@@ -38,6 +38,8 @@ function ProfileEdit() {
       if (file.size > 2 * 1024 * 1024) {
         setError("File size should not exceed 2MB.");
         return;
+      } else {
+        setError(""); // Clear the error message for valid files
       }
       const reader = new FileReader();
       reader.onload = (e) => {

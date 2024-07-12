@@ -1,6 +1,6 @@
 import React from 'react';
 
-function InitialInputForm({ inputs, setInputs }) {
+function InitialInputForm({ inputs = {}, setInputs }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     // Only allow numbers and decimal point

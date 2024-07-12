@@ -1,46 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { formatCurrency } from '../utils';
 
 function ProjectionRow({ data, actualData, onActualDataUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
-    contribution: actualData.contribution !== undefined ? actualData.contribution : data.contribution,
-    returns: actualData.returns !== undefined ? actualData.returns : data.returns
+    contribution: actualData.contribution,
+    returns: actualData.returns
   });
 
-  useEffect(() => {
-    setEditData({
-      contribution: actualData.contribution !== undefined ? actualData.contribution : data.contribution,
-      returns: actualData.returns !== undefined ? actualData.returns : data.returns
-    });
-  }, [actualData, data]);
-
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     setIsEditing(true);
-  };
+    setEditData({
+      contribution: actualData.contribution,
+      returns: actualData.returns
+    });
+  }, [actualData]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     setIsEditing(false);
     onActualDataUpdate(data.year, editData);
-  };
+  }, [data.year, editData, onActualDataUpdate]);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    // Only allow numbers and decimal point
     if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
       setEditData(prev => ({
         ...prev,
         [name]: value
       }));
     }
-  };
+  }, []);
 
-  const actualStartBalance = actualData.startBalance !== undefined ? actualData.startBalance : data.startBalance;
-  const actualContribution = actualData.contribution !== undefined ? actualData.contribution : data.contribution;
-  const actualReturns = actualData.returns !== undefined ? actualData.returns : data.returns;
-  const actualEndBalance = actualData.endBalance !== undefined ? actualData.endBalance : (actualStartBalance + actualContribution + actualReturns);
-
-  const difference = actualEndBalance - data.endBalance;
+  const difference = actualData.endBalance - data.endBalance;
   const differenceClass = difference > 0 ? 'positive' : difference < 0 ? 'negative' : '';
 
   return (
@@ -59,7 +50,7 @@ function ProjectionRow({ data, actualData, onActualDataUpdate }) {
             onChange={handleChange}
             inputMode="decimal"
           />
-        ) : formatCurrency(actualContribution)}
+        ) : formatCurrency(actualData.contribution)}
       </td>
       <td>
         {isEditing ? (
@@ -70,9 +61,9 @@ function ProjectionRow({ data, actualData, onActualDataUpdate }) {
             onChange={handleChange}
             inputMode='decimal'
           />
-        ) : formatCurrency(actualReturns)}
+        ) : formatCurrency(actualData.returns)}
       </td>
-      <td>{formatCurrency(actualEndBalance)}</td>
+      <td>{formatCurrency(actualData.endBalance)}</td>
       <td className={differenceClass}>{formatCurrency(difference)}</td>
       <td>
         {isEditing ? (
@@ -85,4 +76,4 @@ function ProjectionRow({ data, actualData, onActualDataUpdate }) {
   );
 }
 
-export default ProjectionRow;
+export default React.memo(ProjectionRow);

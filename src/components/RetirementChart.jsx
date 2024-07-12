@@ -29,7 +29,7 @@ ChartJS.register(
   LineController
 );
 
-function RetirementChart({ projections, actualData }) {
+function RetirementChart({ projections = [], actualData = [] }) {
   const years = projections.map(p => p.year);
 
   const data = {

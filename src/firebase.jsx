@@ -31,4 +31,4 @@ export const onAuthStateChange = (callback) => {
   });
 };
 
-export { auth, googleProvider, database, firebaseApp, db, onValue, set, ref, update };
+export { auth, googleProvider, database, firebaseApp, db, onValue, set, ref, update, get };
