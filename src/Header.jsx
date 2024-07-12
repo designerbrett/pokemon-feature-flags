@@ -22,9 +22,14 @@ function Header({ showPlanSelector, planName, setPlanName, savedPlans, onSave, o
     }
   };
 
-  const handleRename = (planId, name) => {
-    onRename(planId, name);
-    setEditingPlanId(null);
+  const handleRename = async (planId, name) => {
+    try {
+      await onRename(planId, name);
+      setEditingPlanId(null);
+      setNewPlanName('');
+    } catch (error) {
+      console.error('Error renaming plan:', error);
+    }
   };
 
   const handleDelete = (planId) => {
@@ -43,11 +48,8 @@ function Header({ showPlanSelector, planName, setPlanName, savedPlans, onSave, o
   };
 
   const handleLoadPlan = (plan) => {
-    setPlanName(plan.name);
-    setInitialInputs(plan.initialInputs);
-    setProjections(plan.projections);
-    setActualData(plan.actualData);
-    setSelectedPlan(plan);
+    onLoad(plan);
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -79,15 +81,22 @@ function Header({ showPlanSelector, planName, setPlanName, savedPlans, onSave, o
               {currentUser && savedPlans.map((plan) => (
                 <div key={plan.id} className="p-2 hover:bg-gray-100 flex justify-between items-center">
                   {editingPlanId === plan.id ? (
-                    <input
-                      type="text"
-                      value={newPlanName}
-                      onChange={(e) => setNewPlanName(e.target.value)}
-                      onBlur={() => handleRename(plan.id, newPlanName)}
-                      autoFocus
-                    />
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      handleRename(plan.id, newPlanName);
+                    }}>
+                      <input
+                        type="text"
+                        value={newPlanName}
+                        onChange={(e) => setNewPlanName(e.target.value)}
+                        autoFocus
+                      />
+                      <button type="submit" className="text-blue-500 ml-2">
+                        Save
+                      </button>
+                    </form>
                   ) : (
-                    <span onClick={() => onLoad(plan)}>{plan.name}</span>
+                    <span onClick={() => handleLoadPlan(plan)}>{plan.name}</span>
                   )}
                   <div>
                     <button 

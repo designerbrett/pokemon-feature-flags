@@ -1,7 +1,7 @@
 // Home.jsx
 
 import React, { useEffect, useCallback, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import InitialInputForm from '../components/InitialInputForm';
 import ProjectionTable from '../components/ProjectionTable';
@@ -9,6 +9,7 @@ import RetirementChart from '../components/RetirementChart';
 
 function Home() {
   const { currentUser } = useAuth();
+  const location = useLocation();
   const {
     planName,
     setPlanName,
@@ -22,7 +23,8 @@ function Home() {
     setSelectedPlan,
     calculateProjections,
     updateActualData,
-    clearForm
+    clearForm,
+    loadPlan,
   } = useOutletContext();
 
   const [localProjections, setLocalProjections] = useState(projections);
@@ -34,12 +36,33 @@ function Home() {
 
   useEffect(() => {
     if (selectedPlan) {
+      loadPlan(selectedPlan);
       setPlanName(selectedPlan.name);
       setInitialInputs(selectedPlan.initialInputs);
       setLocalProjections(selectedPlan.projections);
       setLocalActualData(selectedPlan.actualData);
     }
-  }, [selectedPlan, setPlanName, setInitialInputs]);
+  }, [selectedPlan, loadPlan, setPlanName, setInitialInputs]);
+
+  useEffect(() => {
+    if (location.state?.selectedPlan) {
+      loadPlan(location.state.selectedPlan);
+    }
+  }, [location.state, loadPlan]);
+
+  useEffect(() => {
+    return () => {
+      setSelectedPlan(null);
+      clearForm();
+    };
+  }, [setSelectedPlan, clearForm]);
+
+  useEffect(() => {
+    return () => {
+      // This will clear the navigation state when leaving the Home page
+      window.history.replaceState({}, document.title);
+    };
+  }, []);
 
   useEffect(() => {
     if (Object.values(initialInputs).every(value => value !== '')) {

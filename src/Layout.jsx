@@ -65,17 +65,19 @@ function Layout() {
 
   const savePlan = useCallback((planData) => {
     if (currentUser && planData.name.trim()) {
-      const planRef = ref(database, `users/${currentUser.uid}/plans/${planData.id}`);
+      const existingPlan = savedPlans.find(p => p.name === planData.name);
+      const planId = existingPlan ? existingPlan.id : Date.now();
+      const planRef = ref(database, `users/${currentUser.uid}/plans/${planId}`);
   
-      set(planRef, planData)
+      set(planRef, { ...planData, id: planId })
         .then(() => {
           console.log('Plan saved successfully');
           setSavedPlans(prevPlans => {
-            const index = prevPlans.findIndex(p => p.id === planData.id);
+            const index = prevPlans.findIndex(p => p.id === planId);
             if (index !== -1) {
-              return prevPlans.map(p => p.id === planData.id ? planData : p);
+              return prevPlans.map(p => p.id === planId ? { ...planData, id: planId } : p);
             } else {
-              return [...prevPlans, planData];
+              return [...prevPlans, { ...planData, id: planId }];
             }
           });
         })
@@ -85,24 +87,35 @@ function Layout() {
     } else if (!planData.name.trim()) {
       alert('Please enter a name for your plan before saving.');
     }
-  }, [currentUser]);
+  }, [currentUser, savedPlans]);
 
   const renamePlan = useCallback((planId, newName) => {
-    setSavedPlans(prevPlans => 
-      prevPlans.map(plan => plan.id === planId ? { ...plan, name: newName } : plan)
-    );
-    const plansRef = ref(database, `users/${currentUser.uid}/plans`);
-    set(plansRef, savedPlans)
-      .then(() => {
-        console.log('Plan renamed successfully');
-        if (planId === savedPlans.find(p => p.name === planName)?.id) {
-          setPlanName(newName);
+    const planRef = ref(database, `users/${currentUser.uid}/plans/${planId}`);
+    get(planRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const plan = snapshot.val();
+          set(planRef, { ...plan, name: newName })
+            .then(() => {
+              console.log('Plan renamed successfully');
+              const updatedPlans = savedPlans.map(p => 
+                p.id === planId ? { ...p, name: newName } : p
+              );
+              setSavedPlans(updatedPlans);
+              if (selectedPlan && selectedPlan.id === planId) {
+                setSelectedPlan({ ...selectedPlan, name: newName });
+                setPlanName(newName);
+              }
+            })
+            .catch((error) => {
+              console.error('Error renaming plan:', error);
+            });
         }
       })
       .catch((error) => {
-        console.error('Error renaming plan: ', error);
+        console.error('Error fetching plan:', error);
       });
-  }, [currentUser, savedPlans, planName]);
+  }, [currentUser, savedPlans, selectedPlan]);
 
   const deletePlan = useCallback((planId) => {
     setSavedPlans(prevPlans => prevPlans.filter(plan => plan.id !== planId));
@@ -170,6 +183,14 @@ function Layout() {
   
     return { newProjections, newActualData };
   }, []);
+
+  useEffect(() => {
+    if (Object.values(initialInputs).every(value => value !== '') && !selectedPlan) {
+      const { newProjections, newActualData } = calculateProjections(initialInputs);
+      setProjections(newProjections);
+      setActualData(newActualData);
+    }
+  }, [initialInputs, calculateProjections, selectedPlan]);
 
   const updateActualData = useCallback((year, newData) => {
     setActualData(prevData => {

@@ -19,32 +19,34 @@ function ProjectionTable({ projections = [], actualData = [], onActualDataUpdate
   }, [projections, actualData]);
 
   return (
-    <table>
-      <thead>
+    <div className="table-container">
+      <table>
+        <thead>
         <tr>
-          <th>Year</th>
-          <th>Projected Start</th>
-          <th>Projected Contribution</th>
-          <th>Projected Return</th>
-          <th>Projected End</th>
-          <th>Actual Contribution</th>
-          <th>Actual Return</th>
-          <th>Actual End</th>
-          <th>Difference</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {projections.map((yearData, index) => (
-          <ProjectionRow
-            key={yearData.year}
-            data={yearData}
-            actualData={processedActualData[index]}
-            onActualDataUpdate={onActualDataUpdate}
-          />
-        ))}
-      </tbody>
-    </table>
+            <th className="sticky top-header">Year</th>
+            <th className="sticky top-header">Projected Start</th>
+            <th className="sticky top-header">Projected Contribution</th>
+            <th className="sticky top-header">Projected Return</th>
+            <th className="sticky top-header">Projected End</th>
+            <th className="sticky top-header">Actual Contribution</th>
+            <th className="sticky top-header">Actual Return</th>
+            <th className="sticky top-header">Actual End</th>
+            <th className="sticky top-header">Difference</th>
+            <th className="sticky top-header">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {projections.map((yearData, index) => (
+            <ProjectionRow
+              key={yearData.year}
+              data={yearData}
+              actualData={processedActualData[index]}
+              onActualDataUpdate={onActualDataUpdate}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
