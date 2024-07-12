@@ -25,8 +25,14 @@ function ProjectionRow({ data, actualData, onActualDataUpdate }) {
   };
 
   const handleChange = (e) => {
-    const value = e.target.value === '' ? '' : parseFloat(e.target.value);
-    setEditData({ ...editData, [e.target.name]: value });
+    const { name, value } = e.target;
+    // Only allow numbers and decimal point
+    if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      setEditData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const actualStartBalance = actualData.startBalance !== undefined ? actualData.startBalance : data.startBalance;
@@ -47,20 +53,22 @@ function ProjectionRow({ data, actualData, onActualDataUpdate }) {
       <td>
         {isEditing ? (
           <input
-            type="number"
+            type="text"
             name="contribution"
             value={editData.contribution}
             onChange={handleChange}
+            inputMode="decimal"
           />
         ) : formatCurrency(actualContribution)}
       </td>
       <td>
         {isEditing ? (
           <input
-            type="number"
+            type="text"
             name="returns"
             value={editData.returns}
             onChange={handleChange}
+            inputMode='decimal'
           />
         ) : formatCurrency(actualReturns)}
       </td>

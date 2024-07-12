@@ -1,12 +1,15 @@
 import React from 'react';
 
-function InitialInputForm({ inputs, setInputs, planName, setPlanName }) {
+function InitialInputForm({ inputs, setInputs }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setInputs(prevInputs => ({
-      ...prevInputs,
-      [name]: value === '' ? '' : (name === 'startingYear' ? parseInt(value) : parseFloat(value))
-    }));
+    // Only allow numbers and decimal point
+    if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      setInputs(prevInputs => ({
+        ...prevInputs,
+        [name]: value
+      }));
+    }
   };
 
   return (
@@ -14,56 +17,58 @@ function InitialInputForm({ inputs, setInputs, planName, setPlanName }) {
       <div>
         <label htmlFor="startingYear">Starting Year:</label>
         <input
-          type="number"
+          type="text"
           id="startingYear"
           name="startingYear"
           value={inputs.startingYear}
           onChange={handleChange}
-          placeholder="Enter starting year"
+          pattern="\d*"
+          inputMode="numeric"
         />
       </div>
       <div>
-        <label htmlFor="startingAmount">Starting Amount:</label>
+        <label htmlFor="startingAmount">Starting Amount ($):</label>
         <input
-          type="number"
+          type="text"
           id="startingAmount"
           name="startingAmount"
           value={inputs.startingAmount}
           onChange={handleChange}
-          placeholder="Enter starting amount ($)"
+          inputMode="decimal"
         />
       </div>
       <div>
         <label htmlFor="expectedReturn">Expected Annual Return (%):</label>
         <input
-          type="number"
+          type="text"
           id="expectedReturn"
           name="expectedReturn"
           value={inputs.expectedReturn}
           onChange={handleChange}
-          placeholder="Enter expected return"
+          inputMode="decimal"
         />
       </div>
       <div>
-        <label htmlFor="yearlyContribution">Yearly Contribution:</label>
+        <label htmlFor="yearlyContribution">Yearly Contribution ($):</label>
         <input
-          type="number"
+          type="text"
           id="yearlyContribution"
           name="yearlyContribution"
           value={inputs.yearlyContribution}
           onChange={handleChange}
-          placeholder="Enter yearly contribution ($)"
+          inputMode="decimal"
         />
       </div>
       <div>
         <label htmlFor="years">Number of Years:</label>
         <input
-          type="number"
+          type="text"
           id="years"
           name="years"
           value={inputs.years}
           onChange={handleChange}
-          placeholder="Enter number of years"
+          pattern="\d*"
+          inputMode="numeric"
         />
       </div>
     </form>
