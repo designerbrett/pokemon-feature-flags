@@ -6,6 +6,7 @@ import { useAuth } from '../AuthContext';
 import InitialInputForm from '../components/InitialInputForm';
 import ProjectionTable from '../components/ProjectionTable';
 import RetirementChart from '../components/RetirementChart';
+import { database, ref, set, onValue } from '../firebase';
 
 function Home() {
   const { currentUser } = useAuth();
@@ -29,6 +30,43 @@ function Home() {
 
   const [localProjections, setLocalProjections] = useState(projections);
   const [localActualData, setLocalActualData] = useState(actualData);
+
+  useEffect(() => {
+    if (currentUser && selectedPlan) {
+      const planRef = ref(database, `users/${currentUser.uid}/plans/${selectedPlan.id}`);
+      const unsubscribe = onValue(planRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setLocalActualData(data.actualData || []);
+          setActualData(data.actualData || []);
+          console.log('Loaded actual data:', data.actualData); // Add this log
+        }
+      });
+
+      return () => unsubscribe();
+    }
+  }, [currentUser, selectedPlan, setActualData]);
+
+  const handleActualDataUpdate = useCallback((updatedActualData) => {
+    setLocalActualData(updatedActualData);
+    setActualData(updatedActualData);
+
+    if (currentUser && selectedPlan) {
+      const planRef = ref(database, `users/${currentUser.uid}/plans/${selectedPlan.id}`);
+      const updatedPlan = {
+        ...selectedPlan,
+        actualData: updatedActualData
+      };
+      set(planRef, updatedPlan)
+        .then(() => {
+          console.log('Plan with actual data saved successfully');
+          console.log('Updated actual data:', updatedActualData); // Add this log
+        })
+        .catch((error) => {
+          console.error('Error saving plan with actual data: ', error);
+        });
+    }
+  }, [currentUser, selectedPlan, setActualData]);
 
   const handleInputChange = useCallback((newInputs) => {
     setInitialInputs(newInputs);
@@ -74,17 +112,6 @@ function Home() {
     }
   }, [initialInputs, calculateProjections, setProjections, setActualData]);
 
-  const handleActualDataUpdate = useCallback((year, newData) => {
-    updateActualData(year, newData);
-    setLocalActualData(prev => {
-      const updated = prev.map(item => 
-        item.year === year ? { ...item, ...newData } : item
-      );
-      setActualData(updated);
-      return updated;
-    });
-  }, [updateActualData, setActualData]);
-
   return (
     <div className="home">
       <InitialInputForm 
@@ -97,7 +124,8 @@ function Home() {
           <ProjectionTable 
             projections={localProjections} 
             actualData={localActualData} 
-            onActualDataUpdate={handleActualDataUpdate} 
+            onActualDataUpdate={handleActualDataUpdate}
+            expectedReturn={parseFloat(initialInputs.expectedReturn)}
           />
           <RetirementChart projections={localProjections} actualData={localActualData} />
         </>
