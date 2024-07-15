@@ -47,7 +47,6 @@ function Header({ planName, setPlanName, savedPlans, onSave, onRename, onDelete,
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-100">
-      <a href='/'>WealthDoodle</a>
       <div className="relative">
         <button 
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}

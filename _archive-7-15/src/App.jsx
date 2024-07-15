@@ -15,11 +15,11 @@ import VerifyEmail from './VerifyEmail';
 
 function App() {
   const [initialInputs, setInitialInputs] = useState({
-    startingYear: new Date().getFullYear(),
+    startingYear: new Date().getFullYear().toString(),
     startingAmount: '',
     expectedReturn: '',
     yearlyContribution: '',
-    years: 5,
+    years: '5',
   });
   const [projections, setProjections] = useState([]);
   const [actualData, setActualData] = useState([]);
@@ -27,12 +27,14 @@ function App() {
   const [planName, setPlanName] = useState("Untitled Plan");
   const [savedPlans, setSavedPlans] = useState([]);
 
-  const handleInitialInputChange = (name, value) => {
+  const handleInitialInputChange = useCallback((name, value) => {
     setInitialInputs(prevInputs => ({
       ...prevInputs,
       [name]: value
     }));
-  };
+  }, []);
+
+  const memoizedInputs = useMemo(() => initialInputs, [initialInputs]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -257,7 +259,7 @@ function App() {
       startingAmount: '',
       expectedReturn: '',
       yearlyContribution: '',
-      years: 5,
+      years: '5',
     });
     setProjections([]);
     setActualData([]);
